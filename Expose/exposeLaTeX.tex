@@ -5,6 +5,7 @@
 \usepackage{lmodern}          %besserer Font
 \usepackage{microtype}        %bessere Zeichenabstände
 \usepackage[german]{babel}    %deutsch
+\usepackage{enumitem}         %für description-Umgebungen mit Optionen
 
 \usepackage[a4paper,margin=2.5cm]{geometry} %Seitenmaße
 \parskip.5\baselineskip
@@ -42,79 +43,191 @@
 \section{Problemstellung}
 
 \subsection{Motivation}
-\begin{itemize}
-\item Was ist das Problem, dass in der Arbeit gelöst werden soll?
-\item Warum ist dies ein relevantes Problem für die Informatik (Motivation)?
-\end{itemize}
+Störungen in Netzwerken können schwerwiegende Folgen haben. Schon der Ausfall weniger zentraler Knoten kann in technischen Infrastrukturen zu weitreichenden Funktionsverlusten führen. Beispiele sind Blackouts im Stromnetz, Ausfälle von Internetknoten oder Unterbrechungen globaler Lieferketten. Auch in sozialen oder biologischen Systemen spielt Resilienz eine zentrale Rolle – etwa bei der Verbreitung von Informationen, dem Widerstand sozialer Gruppen gegen Desinformation oder der Stabilität biologischer Stoffwechselnetzwerke.
+
+Die zunehmende Komplexität und Vernetzung moderner Systeme führen dazu, dass lokale Störungen häufig globale Auswirkungen haben können. Ereignisse wie Cyberangriffe, Naturkatastrophen oder technische Fehlfunktionen zeigen, wie verwundbar viele Systeme trotz hoher technischer Leistungsfähigkeit sind. Daher ist es von grundlegender Bedeutung, zu verstehen, welche strukturellen Eigenschaften Netzwerke robust oder anfällig machen – und wie sich ihre Widerstandsfähigkeit gezielt erhöhen lässt.
 
 \subsection{Aufgabenstellung}
-\begin{itemize}
-\item Was ist die konkrete Aufgabenstellung, das Ziel der Arbeit?
-\end{itemize}
+Ziel dieser Arbeit ist es, die Resilienz komplexer Netzwerke systematisch zu untersuchen und quantitativ zu bewerten, wie unterschiedliche Netzwerkstrukturen auf Störungen reagieren. Im Mittelpunkt steht dabei die Frage, welche strukturellen Merkmale (z. B. Knotengradverteilung, Zentralität oder Modularität) die Widerstandsfähigkeit eines Netzwerks bestimmen.
+
+Dazu werden zunächst die theoretischen Grundlagen komplexer Netzwerke und ihrer typischen Strukturen erläutert. Anschließend werden verschiedene Arten von Störungen – zufällige Ausfälle und gezielte Angriffe – betrachtet und deren Auswirkungen auf zentrale Resilienzmetriken wie die Größe der größten verbundenen Komponente, die durchschnittliche Pfadlänge und die globale Effizienz untersucht.
+
+Im praktischen Teil wird ein Modell eines Stromnetzes (z. B. auf Basis von Open-Source-Daten wie SciGRID) analysiert. Durch Simulation unterschiedlicher Störungsszenarien soll gezeigt werden, wie robust und verwundbar die Netzwerkstruktur gegenüber verschiedenen Arten von Ausfällen ist. Ziel ist es, daraus allgemeine Zusammenhänge zwischen Netzwerktopologie und Resilienz abzuleiten und mögliche Schutz- und Designstrategien für kritische Infrastrukturen zu diskutieren.
 
 \subsection{Intendierte Ergebnisse}
-\begin{itemize}
-\item Was sind die intendierten Ergebnisse der Arbeit, die mit geeigneten Methoden
-der Informatik erzielt werden sollen, und die das Problem lösen?
-(z.\,B. Anforderungsdefinition, Spezifikation, Architektur, Algorithmen, Prototyp, Methode etc.)
-\end{itemize}
+Im Rahmen dieser Arbeit sollen mithilfe informatikbasierter Methoden die strukturellen und funktionalen Eigenschaften komplexer Netzwerke im Hinblick auf ihre Resilienz untersucht werden. Ziel ist es, ein methodisches Vorgehen zu entwickeln, mit dem sich die Widerstandsfähigkeit von Netzwerken gegenüber Störungen quantifizieren und vergleichen lässt. Dazu werden sowohl theoretische als auch praktische Ergebnisse erzielt, die von der konzeptionellen Modellierung bis zur algorithmischen Analyse reichen.
 
+Zunächst werden die zentralen Begriffe und Anforderungen definiert: Der Resilienzbegriff wird formal im Kontext komplexer Netzwerke spezifiziert und von verwandten Konzepten wie Robustheit und Stabilität abgegrenzt. Anschließend werden geeignete Metriken zur Bewertung der Resilienz festgelegt, darunter die Größe der größten verbundenen Komponente, die durchschnittliche Pfadlänge, die globale Effizienz sowie verschiedene Zentralitätsmaße. Diese Kennzahlen bilden die Grundlage für eine systematische Bewertung der Netzwerkstabilität unter verschiedenen Störszenarien.
+
+Auf methodischer Ebene wird eine algorithmische Vorgehensweise zur Simulation von Störungen entwickelt. Hierbei werden zwei zentrale Szenarien betrachtet: zufällige Ausfälle einzelner Knoten oder Kanten (Random Failures) und gezielte Angriffe auf besonders zentrale Knoten (Targeted Attacks). Für beide Szenarien wird ein Python-basiertes Analysetool auf Basis der Bibliothek \texttt{NetworkX} eingesetzt, das die Netzwerke modelliert, Störungen simuliert und die relevanten Resilienzmetriken automatisch berechnet.
+
+Zur praktischen Validierung der Methode wird ein Prototyp erstellt, der ein reales oder semi-reales Netzwerkmodell – beispielsweise ein Stromnetz aus Open-Source-Daten wie SciGRID – untersucht. Dabei werden die Auswirkungen unterschiedlicher Störungsarten auf die Netzwerkstruktur analysiert und visualisiert. Die Ergebnisse sollen aufzeigen, wie stark die Resilienz von der Netzwerktopologie abhängt und welche Knoten oder Verbindungen besonders kritisch für die Aufrechterhaltung der Funktionalität sind.
+
+Die intendierten Ergebnisse der Arbeit umfassen somit sowohl eine methodische Grundlage zur quantitativen Bewertung der Netzwerkresilienz als auch eine praktische Demonstration der Anwendbarkeit dieser Methoden auf ein reales Beispiel. Daraus sollen abschließend allgemeine Design- und Schutzprinzipien abgeleitet werden, die zur Erhöhung der Robustheit und Wiederherstellungsfähigkeit komplexer Infrastrukturnetze beitragen können.
 
 \section{Aktueller Stand der Technik}
+Klassische Arbeiten nutzen Perkolationstheorie und graphentheoretische Maße, um das Verhalten von Netzwerken unter Knoten- oder Kantenentfernung zu beschreiben. Ein prägender Befund ist, dass skalenfreie Netzwerke gegenüber zufälligen Ausfällen überraschend robust sind, aber sehr verwundbar gegenüber gezielten Angriffen auf Hubs. Diese Einsichten stammen aus fundamentalen Studien zur Fehler- und Angriffstoleranz komplexer Netzwerke \cite{albert2000error}.
 
+Kaskaden- und Lastverteilungsmodelle: Für Infrastrukturnetze (z. B. Stromnetz, Internet) sind Modelle wichtig, die Flussgrößen bzw. Lasten berücksichtigen. Entfernt man einen Knoten, so verteilt sich dessen Last auf andere Knoten, was Überlastungen und kaskadierende Ausfälle auslösen kann. Solche Last- oder Flussmodelle zeigen, dass gezielte Angriffe zu großflächigen Zusammenbrüchen führen können \cite{buldyrev2010catastrophic}.
+
+\section{Lösungsansätze}
 \begin{itemize}
-\item Was gibt es an existierenden Lösungen/Ansätzen?
-\item Welche Defizite haben diese, d.\,h., warum sind die nicht ausreichend
-      zur Lösung des Problems?
+    \item Welche Ideen haben Sie zur Lösung des Problems?
+    \item Mit welchen Schritten wird die Lösungsidee realisiert?
+    \begin{itemize}
+        \item Mit welchen Methoden der Informatik werden die intendierten Ergebnisse der Arbeit erreicht?
+        \item Warum sind diese angemessen, um die Ergebnisse mit der notwendigen Qualität zu erreichen?
+    \end{itemize}
+    \item Wie wird im Rahmen der Arbeit geprüft (validiert), ob die Ergebnisse korrekt sind, d.\,h. das Problem tatsächlich lösen? Welche Unsicherheiten bleiben ggf. als offene Fragen für Folgearbeiten bestehen?
 \end{itemize}
-
-
-\section{Lösungsidee}
-
-\begin{itemize}
-\item Welche Ideen haben Sie zur Lösung des Problems?
-\item Mit welchen Schritten wird die Lösungsidee realisiert?
-      \begin{itemize}
-      \item Mit welchen Methoden der Informatik werden die intendierten
-            Ergebnisse der Arbeit (s.\,o.) erreicht?
-      \item Warum sind diese angemessen, um die Ergebnisse mit der notwendigen Qualität
-            zu erreichen?
-      \end{itemize}
-      \item Wie wird im Rahmen der Arbeit geprüft (validiert), ob die Ergebnisse korrekt
-            sind, d.\,h. das Problem tatsächlich lösen? Welche Unsicherheiten bleiben
-            ggfs. als offene Fragen für Folgearbeiten bestehen?
-\end{itemize}
-
 
 \section{Vorläufige Gliederung}
 
-\begin{itemize}
-\item Gliederungsvorschlag (Kapitel und Abschnitte mit Stichworten für geplante Inhalte),
-      der die Ergebnisse Ihres Vorgehens als Lösung der Aufgabenstellung
-      (Problem, Ziel der Arbeit) nachvollziehbar und begründet darstellt.
-\end{itemize}
+\begin{enumerate}[label=\arabic*., leftmargin=*, itemsep=2pt]
+
+  \item \textbf{Einleitung}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Motivation und Problemstellung
+      \item Zielsetzung und Forschungsfragen
+      \item Aufbau der Arbeit
+    \end{enumerate}
+
+  \item \textbf{Grundlagen}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Smart Grids: physische Ebene und Informations- und Kommunikationstechnik
+      \item Komplexe Netzwerke: Knoten, Kanten, typische Topologien (Erdős–Rényi, Watts–Strogatz, Barabási–Albert)
+      \item Zentrale Metriken: Gradverteilung, Clustering, mittlere Pfadlänge
+      \item Robustheit, Resilienz und Fehlertoleranz: Begriffe und Abgrenzung
+      \item Optional: Kurzüberblick verwandter Arbeiten (integriert)
+    \end{enumerate}
+
+  \item \textbf{Methodik und Versuchsdesign}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Graphmodelle und Parametrisierung (Erdős–Rényi, Watts–Strogatz, Barabási–Albert)
+      \item Angriffsszenarien: zufällige Ausfälle versus gezielte Angriffe (Grad-Zentralität, Zwischenzentralität)
+      \item Bewertungsmetriken: größte verbundene Komponente, mittlere Pfadlänge, globale Effizienz, kritischer Anteil, Fläche unter der Robustheitskurve
+      \item Versuchsprotokoll: Instanzanzahl, Schrittweite der Entfernungen, Auswerteverfahren
+    \end{enumerate}
+
+  \item \textbf{Implementierung}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Werkzeuge und Bibliotheken (Python, NetworkX)
+      \item Softwareaufbau und Module
+      \item Reproduzierbarkeit (Zufallsstartwerte, Konfiguration, Versionierung)
+    \end{enumerate}
+
+  \item \textbf{Ergebnisse}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Topologische Merkmale der erzeugten Netze
+      \item Robustheit unter zufälligen Ausfällen
+      \item Robustheit unter gezielten Angriffen
+      \item Vergleichskennzahlen und Sensitivitätsanalysen
+      \item Optional: Validierung an einem kleinen Realnetz (z.\,B. IEEE-14)
+    \end{enumerate}
+
+  \item \textbf{Diskussion}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Interpretation im Smart-Grid-Kontext
+      \item Implikationen für Schutzstrategien und Designprinzipien
+      \item Einschränkungen und externe Validität
+    \end{enumerate}
+
+  \item \textbf{Fazit und Ausblick}
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Beantwortung der Forschungsfragen und Kernerkenntnisse
+      \item Ausblick: Lastflussmodelle, Kaskaden, interdependente Netze
+    \end{enumerate}
+
+  \item \textbf{Literaturverzeichnis}
+
+  \item \textbf{Anhang} (optional)
+    \begin{enumerate}[label*=\arabic*., itemsep=1pt]
+      \item Parametertabellen und Konfigurationen
+      \item Zusätzliche Abbildungen und Plots
+      \item Pseudocode oder Codeauszüge
+    \end{enumerate}
+
+\end{enumerate}
+
 
 
 \section{Vorläufiger Zeitplan}
 
+\subsection*{Oktober–Dezember 2025 (KW 42–52)}
+
+\textbf{Ziele.} 
 \begin{itemize}
-\item Abfolge der notwendigen Schritte inkl. Erstellung der jeweiligen Kapitel der Arbeit
-\item Meilensteine von Anmeldung bis Abgabe der Arbeit
+  \item \textbf{Oktober (KW 42–45):} Gemeinsames Verständnis für das Exposé; Exposé schreiben.  
+        \textbf{Abgabe Exposé: 02.\,Nov.\,2025 (KW 45)}.
+  \item \textbf{November (KW 46–48):} Start ins Projekt und Bericht; Gliederung verfeinern; 
+        Schreib-/Programmierprozess anstoßen; theoretische und technische Grundlagen weiter ausarbeiten.
+  \item \textbf{Dezember (KW 49–52):} Erste Modellierungen und Analysen starten; Ergebnisse abstimmen; 
+        fehlende Berechnungen erarbeiten; Ergebnisse zusammenführen (Feiertage berücksichtigen).
+\end{itemize}
+
+\textbf{Besprechung.}
+\begin{itemize}
+  \item \textbf{Oktober:} Exposé-Inhalte (Themenfokus, Forschungsfrage, Methodik), Teamaufteilung, Tools.  
+        Abgabe Exposé (KW 45).
+  \item \textbf{November:} Rückmeldung der Kursleitung; Vorgehen Projekt; Gliederung Bericht; Aufgabenaufteilung; 
+        theoretischer Rahmen; Literaturbesprechung; Tool- und Datenauswahl.
+  \item \textbf{Dezember:} Fortschritte zu Analysen; (ggf. Prüfungsanmeldung); 
+        Verortung der Ergebnisse im Bericht \& Folien; Rücksprache zur Präsentation.
+\end{itemize}
+
+\textbf{Aufgaben.}
+\begin{itemize}
+  \item \textbf{Oktober:} Literaturrecherche; Quellen sammeln; Zeitplan erstellen; Forschungsfrage und Zielbilder definieren; 
+        Exposé vervollständigen und abgeben.
+  \item \textbf{November:} Rückmeldungen einarbeiten; Datenauswahl und Umfang festlegen; theoretische Grundlagen ausarbeiten; 
+        Tools testen; Datensätze sichten.
+  \item \textbf{Dezember:} Beispielnetzwerke modellieren; Methodenteil schreiben; 
+        Evaluationen berechnen; Visualisierungen erstellen; Bericht vorbereiten; Präsentation finalisieren.
+\end{itemize}
+
+\subsection*{Januar–März 2026 (KW 1–11)}
+
+\textbf{Ziele.}
+\begin{itemize}
+  \item \textbf{Januar (KW 1–4):} 04.\,Jan.\,2026 – Abgabe Ausarbeitung \& Präsentation (Zwischenstand); 
+        Feedback einarbeiten; Zwischenstand Endbericht. 
+  \item \textbf{Februar (KW 5–8):} Bericht finalisieren; Korrekturlesen; Puffer; 
+        15.\,Feb.\,2026 – Abgabe Ausarbeitung.
+  \item \textbf{März (KW 9–11):} Präsentation vorbereiten; 13.\,März 2026 – Präsentation.
+\end{itemize}
+
+\textbf{Besprechung.}
+\begin{itemize}
+  \item \textbf{Januar:} Durchsicht, Rückmeldungen, Bedenken; Abgabeformalitäten klären; Interpretation \& Ergebnisse. 
+  \item \textbf{Februar:} Vollständigkeitscheck; Abgabeprozess; Präsentationsaufteilung.
+  \item \textbf{März:} Finale Abstimmungen zur Präsentation.
+\end{itemize}
+
+\textbf{Aufgaben.}
+\begin{itemize}
+  \item \textbf{Januar:} Abgabe Präsentation \& Berichtsentwurf; Feedback einarbeiten; ggf. zusätzliche Analysen.
+  \item \textbf{Februar:} Endbericht finalisieren; Literaturverzeichnis abschließen; letzte Ergänzungen.
+  \item \textbf{März:} Präsentation ausarbeiten, Probeläufe, Feinschliff.
 \end{itemize}
 
 
-\section{Ausgangsliteratur}
 
-\begin{itemize}
-\item relevante Literaturquellen, hier im Exposé an den geeigneten Stellen referenziert
-\item Zitierweise gemäß der Mustervorlage für Abschlussarbeiten
-\end{itemize}
+\section{Verweise}
+\begin{thebibliography}{9}
+\bibitem{albert2000error}
+Albert, R., Jeong, H., \& Barabási, A.-L. (2000). Error and attack tolerance of complex networks. \textit{Nature}, 406, 378–382.
 
+\bibitem{buldyrev2010catastrophic}
+Buldyrev, S., Parshani, R., Paul, G., Stanley, H., \& Havlin, S. (2010). Catastrophic cascade of failures in interdependent networks. \textit{Nature}, 1025–1028.
 
-\section{Abschlussarbeit im Unternehmen}
+\bibitem{newman2010networks}
+Newman, M. E. J. (2010). \textit{Networks: An Introduction}. Oxford University Press.
 
-Bei Arbeiten, die in einer Firma/Behörde/Institution durchgeführt werden sollen,
-geben Sie bitte die dort betreuende Person an. Sie sollte idealerweise einen
-Abschluss in Informatik haben und die Erstellung der Arbeit inhaltlich mitbetreuen.
+\bibitem{cohen2010complex}
+Cohen, R., \& Havlin, S. (2010). \textit{Complex Networks: Structure, Robustness and Function}. Cambridge University Press.
+
+\bibitem{holme2012temporal}
+Holme, P., \& Saramäki, J. (2012). Temporal Networks. \textit{Physics Reports}.
+\end{thebibliography}
 
 \end{document}
