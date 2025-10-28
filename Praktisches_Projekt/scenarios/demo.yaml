@@ -1,0 +1,14 @@
+experiment:
+  seed: 42
+  step: 0.05
+  repeats: 1
+  strategies: [random, degree, betweenness]
+  graphs:
+    - kind: ER
+      params: { n: 300, p: 0.01 }
+    - kind: WS
+      params: { n: 300, k: 6, p: 0.1 }
+    - kind: BA
+      params: { n: 300, m: 3 }
+output:
+  dir: outputs/scenario_demo

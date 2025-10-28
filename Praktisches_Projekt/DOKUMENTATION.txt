@@ -1,0 +1,253 @@
+Netzwerk-Resilienz – Einsteigerfreundliche Dokumentation
+========================================================
+
+Diese Datei erklärt in einfachen Worten, was dieses Projekt macht, warum es nützlich ist, wie Sie es ausführen, wie der Code aufgebaut ist und wie Sie es sinnvoll erweitern können. Zielgruppe sind Einsteigerinnen und Einsteiger ohne Vorkenntnisse in komplexen Netzwerken.
+
+Inhalt
+------
+1. Was ist das Ziel dieses Projekts?
+2. Grundideen kurz erklärt (Graphen, Resilienz, Angriffe, Metriken)
+3. Was kann die Software konkret?
+4. Installation und erster Start
+5. Szenariodateien nutzen (statt alles in der Kommandozeile zu tippen)
+6. Interaktive App (visuell und klickbar)
+7. Wie ist der Code aufgebaut? (Code-Landkarte mit Datei-/Funktions-Referenzen)
+8. Ein Beispiel-Ablauf „von oben nach unten“
+9. Ergebnisse: Was bedeuten die CSVs und der Plot?
+10. Wie geht es weiter? (Erweiterungen & Ideen)
+11. Häufige Fragen & Fehlerbehebung
+12. Glossar
+
+------------------------------------------------------------
+1) Was ist das Ziel dieses Projekts?
+------------------------------------------------------------
+Wir untersuchen, wie widerstandsfähig (resilient) verschiedene Netzwerkstrukturen gegen Störungen sind. Vereinfacht: Wir bauen Beispielnetzwerke (synthetische Graphen), entfernen schrittweise Knoten (entweder zufällig oder gezielt), und beobachten, wie stark das Netzwerk „zusammenbricht“. Daraus leiten wir Kennzahlen und Kurven ab, die Robustheit und Verwundbarkeit messbar machen.
+
+Warum das wichtig ist: Viele reale Systeme sind Netzwerke (Stromnetze, Kommunikationsnetze, Transportnetze, soziale Netze). Zu verstehen, welche Strukturen robuster sind, hilft beim Design, Betrieb und Schutz kritischer Infrastrukturen.
+
+------------------------------------------------------------
+2) Grundideen kurz erklärt
+------------------------------------------------------------
+- Graph/Netzwerk: Punkte (Knoten) sind über Linien (Kanten) verbunden. In Python nutzen wir die Bibliothek „NetworkX“.
+- Resilienz/Robustheit: Wie gut bleibt das Netzwerk funktionsfähig, wenn Teile ausfallen (z. B. Knoten)?
+- Angriffe/Störungen:
+  - zufällig (Random Failures): Knoten werden in Zufallsreihenfolge entfernt.
+  - gezielt (Targeted Attacks): Wir entfernen bewusst besonders „wichtige“ Knoten zuerst – zum Beispiel die mit den meisten Verbindungen (Grad) oder den höchsten „Vermittler“-Werten (Zwischenzentralität/Betweenness).
+- Wichtige Metriken:
+  - LCC-Anteil: Größe der größten zusammenhängenden Teilmenge (Komponente) geteilt durch die ursprüngliche Knotenanzahl. Je höher, desto „zusammenhängender“ bleibt das Netzwerk.
+  - Mittlere Pfadlänge (auf der größten Komponente): Wie viele Schritte braucht man durchschnittlich zwischen zwei Knoten? Steigt stark, ist das Netzwerk „umständlicher“ geworden.
+  - Globale Effizienz: Maß dafür, wie effizient Information im Netzwerk transportiert werden kann. Niedriger = schlechter.
+  - AUC (Fläche unter der Robustheitskurve): Fasst die gesamte Kurve kompakt zusammen (größer = robuster).
+  - Kritischer Anteil: Der Anteil entfernter Knoten, bei dem die LCC auf 0,5 fällt (Netz teilt sich „merklich“).
+
+------------------------------------------------------------
+3) Was kann die Software konkret?
+------------------------------------------------------------
+- Drei Graphmodelle erzeugen: ER (Erdős–Rényi), WS (Watts–Strogatz), BA (Barabási–Albert).
+- Drei Strategien simulieren: zufällig, höchster Grad, höchste Zwischenzentralität (jeweils adaptiv neu berechnet).
+- Zeitreihen-Metriken protokollieren (CSV) und zusammenfassen (AUC, kritischer Anteil).
+- Robustheitskurven als Bild exportieren.
+- Konfiguration über YAML/JSON-Szenariodateien.
+- Interaktive Streamlit-App zum „Spielen“ mit Parametern und sofortigem Visualisieren.
+
+------------------------------------------------------------
+4) Installation und erster Start
+------------------------------------------------------------
+Voraussetzung: Python 3.10 oder neuer.
+
+a) Abhängigkeiten installieren (im Ordner „Praktisches_Projekt“):
+  pip install -r requirements.txt
+
+b) Schneller Testlauf (Standardparameter):
+  python main.py
+
+c) Hilfe anzeigen (alle Optionen):
+  python main.py -h
+
+Hinweis: In Windows PowerShell sind die obigen Befehle direkt so nutzbar, sofern Sie im Ordner „Praktisches_Projekt“ stehen.
+
+------------------------------------------------------------
+5) Szenariodateien nutzen (statt alles in der Kommandozeile zu tippen)
+------------------------------------------------------------
+Beispiel-Szenario: „scenarios/demo.yaml“
+
+Inhalt (verkürzt):
+  experiment:
+    seed: 42
+    step: 0.05
+    repeats: 1
+    strategies: [random, degree, betweenness]
+    graphs:
+      - kind: ER
+        params: { n: 300, p: 0.01 }
+      - kind: WS
+        params: { n: 300, k: 6, p: 0.1 }
+      - kind: BA
+        params: { n: 300, m: 3 }
+  output:
+    dir: outputs/scenario_demo
+
+Starten mit:
+  python main.py --config scenarios/demo.yaml
+
+Die Datei gibt an, welche Graphen, Strategien und Parameter verwendet werden. Der „output.dir“-Pfad bestimmt, wohin CSVs und Plot geschrieben werden. Das ist bequemer und reproduzierbar.
+
+Code-Referenz:
+- Szenario laden: `src/resilience/config.py` – Funktion `load_scenario(...)`
+- Anwendung in der CLI: `main.py` (Option `--config`)
+
+------------------------------------------------------------
+6) Interaktive App (visuell und klickbar)
+------------------------------------------------------------
+Sie können eine Weboberfläche lokal starten:
+  streamlit run app_streamlit.py
+
+Dort wählen Sie Graph-Typ und Parameter per Dropdown/Slider, starten die Simulation, sehen den Plot und laden CSVs herunter. Alternativ können Sie auch eine Szenariodatei in der App hochladen.
+
+Code-Referenz:
+- `app_streamlit.py` – nutzt die gleichen Kernfunktionen wie die CLI.
+
+------------------------------------------------------------
+7) Wie ist der Code aufgebaut? (Code-Landkarte)
+------------------------------------------------------------
+Wichtigste Dateien und Funktionen (alle Pfade relativ zum Ordner „Praktisches_Projekt“):
+
+- `main.py`
+  - CLI-Einstiegspunkt. Liest Optionen ein, lädt optional Szenario, ruft die Simulation auf, speichert CSVs und den Plot.
+  - Kernfunktionen: `build_default_graphs(n)`, `parse_args()`, `main()`
+
+- `src/resilience/graphs.py`
+  - Datentyp `GraphSpec(kind: str, params: Dict[str, Any])`: beschreibt einen Graph-Typ und seine Parameter.
+  - `make_graph(spec: GraphSpec, seed: Optional[int]) -> nx.Graph`: erzeugt je nach `spec.kind` einen ER-, WS- oder BA-Graphen.
+
+- `src/resilience/metrics.py`
+  - `lcc_fraction(G, n0)`: Anteil der größten Komponente (LCC) bezogen auf die anfängliche Knotenzahl n0.
+  - `avg_path_length_lcc(G)`: mittlere kürzeste Pfadlänge auf der LCC.
+  - `global_efficiency(G)`: globale Effizienz.
+  - `compute_metrics(G, n0)`: bündelt die oben genannten Metriken.
+  - `auc_trapz(xs, ys)`: Fläche unter der Kurve (Trapezregel).
+  - `critical_fraction(xs, ys, threshold=0.5)`: Anteil, bei dem die LCC unter den Schwellwert fällt (linear interpoliert).
+
+- `src/resilience/attacks.py`
+  - `simulate_progressive_node_removal(G0, strategy, step, seed, recompute_each_step=True) -> List[Dict]`:
+    - Herzstück der Simulation. Entfernt Knoten schrittweise und protokolliert nach jeder Schrittweite die Metriken.
+    - Strategien:
+      - `random`: zufällige Reihenfolge (wird vorab festgelegt)
+      - `degree`: in jedem Schritt den Knoten mit dem höchsten Grad bestimmen und entfernen (adaptiv)
+      - `betweenness`: analog, aber anhand Zwischenzentralität (adaptiv)
+    - Rückgabe: Liste von Messpunkten (Dicts), z. B. `{ "fraction_removed": 0.1, "lcc_frac": 0.7, ... }`
+
+- `src/resilience/simulate.py`
+  - Datentyp `ExperimentSpec`: Liste von `GraphSpec`-Einträgen, Strategien, Schrittweite, Wiederholungen, Seed.
+  - `run_experiment(spec) -> pd.DataFrame`: führt für alle Graphen/Strategien/Wiederholungen die Simulation durch und sammelt alles als Tabelle.
+  - `summarize(df) -> pd.DataFrame`: berechnet AUC und „kritischen Anteil“ je Graph/Strategie/Wiederholung.
+
+- `src/resilience/plotting.py`
+  - `save_robustness_plot(df, out_path, title)`: zeichnet die LCC-Kurven gegen den entfernten Anteil und speichert sie als PNG.
+
+- `src/resilience/config.py`
+  - `load_scenario(path) -> Scenario`: lädt YAML/JSON und erzeugt daraus `ExperimentSpec` und optional einen Ausgabepfad.
+
+- `app_streamlit.py`
+  - Interaktive App mit denselben Kernfunktionen wie die CLI.
+
+------------------------------------------------------------
+8) Ein Beispiel-Ablauf „von oben nach unten“
+------------------------------------------------------------
+Nehmen wir an, Sie starten:
+  python main.py --config scenarios/demo.yaml
+
+1. `main.py` liest die Datei `scenarios/demo.yaml` ein (`load_scenario`).
+2. Es wird ein `ExperimentSpec` erstellt (Grapharten, Strategien, Schrittweite, …).
+3. `run_experiment(spec)` baut aus jeder Kombination (Graph × Strategie × Wiederholung) eine Simulation:
+   - Für jede Kombination ruft es `simulate_progressive_node_removal(...)` auf.
+   - Diese Funktion entfernt Knoten nach und nach entsprechend der Strategie.
+   - Nach definierten Schrittweiten (z. B. alle 5%) werden Metriken aus `metrics.py` berechnet.
+4. Alle Messpunkte landen in einem großen `DataFrame` (Tabelle). Dieser wird als `results_timeseries.csv` gespeichert.
+5. `summarize(df)` fasst pro Kurve (Graph, Strategie, Wiederholung) die Fläche unter der Kurve (AUC) und den kritischen Anteil (LCC ≤ 0,5) zusammen – gespeichert als `results_summary.csv`.
+6. `save_robustness_plot(...)` zeichnet alle Kurven in eine Grafik (`robustness_curves.png`).
+
+------------------------------------------------------------
+9) Ergebnisse: Was bedeuten die CSVs und der Plot?
+------------------------------------------------------------
+- `results_timeseries.csv` (Zeitreihe):
+  - Spalten u. a.: `graph_label`, `strategy`, `repeat`, `fraction_removed`, `lcc_frac`, `avg_path_length`, `global_efficiency`.
+  - Beispiel: Eine Zeile mit `fraction_removed = 0.3` bedeutet: 30% der Knoten wurden entfernt; `lcc_frac = 0.6` heißt, die größte Komponente hat noch 60% der ursprünglichen Knoten.
+
+- `results_summary.csv` (Zusammenfassung):
+  - Spalten u. a.: `graph_label`, `strategy`, `repeat`, `auc`, `f_crit_lcc<=0.5`.
+  - `auc`: Je größer, desto robuster die Kurve (die LCC bleibt im Mittel länger hoch).
+  - `f_crit_lcc<=0.5`: Der „kritische“ Entfernungsanteil; kleiner Wert = das Netz bricht früher stark ein.
+
+- `robustness_curves.png` (Plot):
+  - x-Achse: entfernter Anteil der Knoten (0 bis 1).
+  - y-Achse: Anteil der größten Komponente (0 bis 1).
+  - Jede Linie entspricht einer Kombination aus Graph und Strategie.
+
+Interpretation:
+- „Zufällig“ vs. „gezielt“: In vielen Netzen ist der zufällige Ausfall weniger schlimm als der gezielte Angriff auf die „wichtigsten“ Knoten.
+- Modellunterschiede (ER/WS/BA): BA-Netze (skalenfrei) sind oft robust gegenüber Zufallsausfällen, aber sehr verwundbar gegenüber gezielten Angriffen auf Hubs (Knoten mit hohem Grad).
+
+------------------------------------------------------------
+10) Wie geht es weiter? (Erweiterungen & Ideen)
+------------------------------------------------------------
+- Geschwindigkeit verbessern:
+  - „Statisch“ gerankte Angriffe: Statt nach jedem Schritt neu zu berechnen (adaptiv), einmalig sortieren und dann der Liste folgen. Das ist schneller, aber weniger realistisch.
+  - Parallelisierung/Rechen-Cluster: Mehrere Wiederholungen/Graphen parallel ausführen.
+
+- Weitere Metriken:
+  - Clustering-Koeffizient, Assortativität, Zahl der Komponenten, Durchmesser der LCC.
+  - „Vulnerability“-Maße, Fläche über der Kurve, etc.
+
+- Kantenangriffe:
+  - Analog zu Knotenangriffen auch Kanten entfernen und vergleichen.
+
+- Realistische Netze:
+  - Kleine Testnetze (z. B. IEEE-14) oder reale Datensätze laden und analysieren.
+
+- Fluss- und Lastmodelle:
+  - Über die reine Topologie hinaus: Simulieren, wie Lasten/Flüsse umverteilt werden (z. B. in Stromnetzen), um Kaskaden zu untersuchen.
+
+- Reproduzierbarkeit/Qualität:
+  - Einheitliche Zufallssamen (Seeds), Protokolldateien (Logs), Versionierung der Szenariodateien.
+  - Unit-Tests für Kernfunktionen (z. B. `critical_fraction`, `lcc_fraction`).
+
+- Reporting:
+  - Automatische PDF/HTML-Berichte mit Grafiken und Kennzahlen.
+
+------------------------------------------------------------
+11) Häufige Fragen & Fehlerbehebung
+------------------------------------------------------------
+- Die Simulation ist „langsam“ bei großen Graphen:
+  - Grund: Bei gezielten Angriffen wird nach jedem Schritt die Zentralität neu berechnet (aufwändig). Lösung: „statische“ Version der Strategien einbauen oder kleinere Schrittweite/Graphen wählen.
+
+- Die mittlere Pfadlänge ist NaN:
+  - Grund: Für sehr kleine oder leere Komponenten ist die Pfadlänge nicht definiert. Das ist erwartbar und kein Fehler.
+
+- Die App meldet Telemetrie-/Willkommenshinweise von Streamlit:
+  - Das ist normal. Falls gewünscht, kann Telemetrie in der Streamlit-Konfiguration deaktiviert werden (siehe Hinweis beim Start der App).
+
+- Pfadprobleme unter Windows:
+  - Nutzen Sie am besten in den Beispielen angegebene relativen Pfade, oder passen Sie absolute Pfade an Ihr System an.
+
+------------------------------------------------------------
+12) Glossar
+------------------------------------------------------------
+- Knoten (Node): Ein Punkt im Netzwerk.
+- Kante (Edge): Verbindung zwischen zwei Knoten.
+- Komponente: Ein „Zusammenhangsgebiet“ im Netzwerk – alle Knoten darin sind (über Kanten) erreichbar.
+- LCC (Largest Connected Component): Größte Komponente eines Graphen.
+- Grad (Degree): Wie viele Kanten ein Knoten hat.
+- Zwischenzentralität (Betweenness Centrality): Wie oft ein Knoten auf kürzesten Wegen zwischen anderen Knoten liegt (eine Art „Vermittler“-Maß).
+- AUC (Area Under the Curve): Fläche unter einer Kurve – hier unter der LCC-Kurve gegen den entfernten Anteil.
+
+Code-Referenzen (Schnellzugriff)
+--------------------------------
+- Graph-Erzeugung: `src/resilience/graphs.py` → `GraphSpec`, `make_graph(...)`
+- Metriken: `src/resilience/metrics.py` → `lcc_fraction`, `avg_path_length_lcc`, `global_efficiency`, `auc_trapz`, `critical_fraction`
+- Angriffe/Simulation: `src/resilience/attacks.py` → `simulate_progressive_node_removal(...)`
+- Versuchssteuerung: `src/resilience/simulate.py` → `ExperimentSpec`, `run_experiment(...)`, `summarize(...)`
+- Plotten: `src/resilience/plotting.py` → `save_robustness_plot(...)`
+- Szenarien: `src/resilience/config.py` → `load_scenario(...)`
+- CLI: `main.py`
+- Interaktive App: `app_streamlit.py`
