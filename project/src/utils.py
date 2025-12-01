@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Sequence, Any, Dict
 
 import numpy as np
+import hashlib
+import json
 
 
 def trapezoidal_auc(x: Sequence[float], y: Sequence[float]) -> float:
     """
     Compute the area under a curve using the trapezoidal rule.
 
-    Assumes x is sorted and of same length as y.
+    Im Kontext unseres Projekts entspricht dies:
+      Rob = ∫ S(q) dq
+    wobei S(q) z.B. die gcc_fraction nach Entfernung des Anteils q darstellt.
     """
     if len(x) != len(y):
         raise ValueError("x and y must have the same length.")
@@ -18,5 +22,16 @@ def trapezoidal_auc(x: Sequence[float], y: Sequence[float]) -> float:
 
     x_arr = np.array(x, dtype=float)
     y_arr = np.array(y, dtype=float)
-
+    # Fläche unter der Kurve per Trapezregel
     return float(np.trapz(y_arr, x_arr))
+
+
+def hash_config(config: Dict[str, Any]) -> str:
+    """
+    Create a stable hash for a configuration dict, useful to detect
+    when a simulation needs to be re-run.
+    """
+    # Dict deterministisch serialisieren
+    json_str = json.dumps(config, sort_keys=True)
+    # Stabiler SHA-256 Hash für Wiedererkennungen/Caching
+    return hashlib.sha256(json_str.encode("utf-8")).hexdigest()

@@ -9,7 +9,7 @@ graphs:
     model: "erdos_renyi"
     n: 1000
     p: 0.01
-    repetitions: 5
+    repetitions: 3
 
   - id: "WS_n1000_k10_p0.1"
     type: "synthetic"
@@ -17,14 +17,14 @@ graphs:
     n: 1000
     k: 10
     p: 0.1
-    repetitions: 5
+    repetitions: 3
 
   - id: "BA_n1000_m3"
     type: "synthetic"
     model: "barabasi_albert"
     n: 1000
     m: 3
-    repetitions: 5
+    repetitions: 3
 
 attacks:
   - id: "random_failures"
@@ -44,13 +44,19 @@ fractions:
   step: 0.05
 
 metrics:
-  - lcc_fraction
-  - average_path_length_lcc
+  - gcc_fraction
+  - gcc_size
+  - avg_path_length_gcc
+  - diameter_gcc
   - global_efficiency
+  - global_clustering
+  - avg_local_clustering
+  - mean_degree
+  - max_degree
+  - degree_std
 
 analysis:
-  metric_for_auc: "lcc_fraction"
+  metric_for_auc: "gcc_fraction"
   aggregate_by:
     - "graph_id"
     - "attack_id"
-
