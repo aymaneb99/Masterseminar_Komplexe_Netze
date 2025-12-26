@@ -1,0 +1,50 @@
+\documentclass[12pt,a4paper]{article}
+
+% -------------------
+% Pakete
+% -------------------
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % bei neuem LaTeX optional
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{biblatex}
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{lmodern} 
+\usepackage{microtype}
+
+\usepackage[
+  backend=biber,
+  style=authoryear
+]{biblatex}
+
+\addbibresource{literatur.bib}
+
+% -------------------
+% Layout
+% -------------------
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% -------------------
+\begin{document}
+
+\tableofcontents
+\newpage
+
+\input{../Kapitel1/kapitel1.tex}
+\input{../Kapitel2/kapitel2.tex}
+\input{../Kapitel3/kapitel3.tex}
+\input{../Kapitel4/kapitel4.tex}
+\input{../Kapitel5/kapitel5.tex}
+\input{../Kapitel6/kapitel6.tex}
+\input{../Literatur/Literatur.bib}
+
+
+\printbibliography
+
+\end{document}
