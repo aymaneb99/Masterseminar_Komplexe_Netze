@@ -1,0 +1,107 @@
+<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <!-- Definitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+  
+  <!-- Config Files -->
+  <rect x="420" y="20" width="160" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="500" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">configs/*.yaml</text>
+  
+  <!-- Config Loader -->
+  <rect x="420" y="100" width="160" height="40" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="500" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="13">src.config_loader</text>
+  
+  <!-- Main Orchestration Box -->
+  <rect x="50" y="170" width="900" height="300" fill="none" stroke="#333" stroke-width="2"/>
+  <text x="500" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Orchestration</text>
+  
+  <!-- Graph Factory -->
+  <rect x="80" y="220" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="150" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">Graph Factory</text>
+  <text x="150" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(graph_factory)</text>
+  
+  <!-- Synthetic Models -->
+  <rect x="280" y="220" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="350" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">synthetic models</text>
+  <text x="350" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(network_models)</text>
+  
+  <!-- Real Data Files -->
+  <rect x="280" y="300" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="350" y="318" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">data/real/</text>
+  <text x="350" y="333" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">*.graphml</text>
+  
+  <!-- Real Loader -->
+  <rect x="80" y="300" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="150" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">real loader</text>
+  <text x="150" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(real_...)</text>
+  
+  <!-- Metrics -->
+  <rect x="80" y="380" width="340" height="70" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="250" y="400" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">metrics</text>
+  <text x="250" y="418" text-anchor="middle" font-family="Arial, sans-serif" font-size="10">gcc_fraction, avg_path_length_gcc, diameter_gcc,</text>
+  <text x="250" y="432" text-anchor="middle" font-family="Arial, sans-serif" font-size="10">global_efficiency, clustering, degree_stats</text>
+  
+  <!-- Attacks -->
+  <rect x="780" y="220" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="850" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">attacks</text>
+  <text x="850" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(order)</text>
+  
+  <!-- CSV Writer -->
+  <rect x="480" y="380" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="550" y="405" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">CSV writer</text>
+  
+  <!-- Results -->
+  <rect x="680" y="380" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="750" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">results/&lt;exp&gt;/</text>
+  <text x="750" y="413" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">*.csv</text>
+  
+  <!-- CLI -->
+  <rect x="80" y="520" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="150" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">CLI</text>
+  <text x="150" y="555" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(src.main)</text>
+  
+  <!-- Streamlit UI -->
+  <rect x="780" y="520" width="140" height="50" fill="none" stroke="#333" stroke-width="1.5"/>
+  <text x="850" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">Streamlit UI</text>
+  <text x="850" y="555" text-anchor="middle" font-family="Arial, sans-serif" font-size="11">(app/)</text>
+  
+  <!-- Arrows -->
+  <!-- Config to Config Loader -->
+  <line x1="500" y1="70" x2="500" y2="100" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Config Loader to Orchestration -->
+  <line x1="500" y1="140" x2="500" y2="170" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Graph Factory to Synthetic Models -->
+  <line x1="220" y1="245" x2="280" y2="245" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Real Data to Real Loader -->
+  <line x1="280" y1="325" x2="220" y2="325" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Graph Factory to Real Loader (vertical) -->
+  <line x1="150" y1="270" x2="150" y2="300" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Real Loader to Metrics -->
+  <line x1="150" y1="350" x2="150" y2="380" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Metrics to CSV Writer -->
+  <line x1="420" y1="415" x2="480" y2="415" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- CSV Writer to Results -->
+  <line x1="620" y1="405" x2="680" y2="405" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Attacks to Results -->
+  <line x1="850" y1="270" x2="850" y2="320" stroke="#333" stroke-width="1.5"/>
+  <line x1="850" y1="320" x2="750" y2="320" stroke="#333" stroke-width="1.5"/>
+  <line x1="750" y1="320" x2="750" y2="380" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- CLI to Orchestration -->
+  <line x1="150" y1="520" x2="150" y2="470" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  
+  <!-- Streamlit to Orchestration -->
+  <line x1="850" y1="520" x2="850" y2="470" stroke="#333" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+</svg>
