@@ -130,7 +130,8 @@ Automatische Ablage unter `results/<experiment_name>/`:
 ---
 
 <a id="quickstart"></a>
-## 3) Quickstart (Windows PowerShell)
+## 3) Quickstart 
+(Windows PowerShell)
 
 Voraussetzungen: Python 3.12 wird empfohlen. Ein virtuelles Umfeld (.venv) hält
 das System sauber.
@@ -158,6 +159,25 @@ Hinweise:
   .venv mit Python 3.12 (empfohlen) oder aktualisiere Streamlit.
 - Beim Start der Streamlit‑App öffnet sich der Browser automatisch. In der App eine
   YAML‑Konfiguration auswählen und Simulation starten.
+
+
+ Für MacOS & Linux:
+ 
+# Im Projektordner eine virtuelle Umgebung anlegen
+python3 -m venv .venv
+
+# Aktivieren
+source .venv/bin/activate
+
+# Abhängigkeiten installieren
+pip install --upgrade pip  # (optional)
+pip install -r requirements.txt
+
+# Streamlit-App starten
+streamlit run app/streamlit_app.py
+
+# (Alternative) CLI-Modus mit Beispielkonfiguration
+python -m src.main -c "configs/synthetic_vs_synthetic.yaml"
 
 ---
 
@@ -473,9 +493,9 @@ Strukturdiagramm:
  |   | real loader  |<-----|   data/real/*.graphml|             |
  |   | (real_... )  |      +----------------------+             |
  |   +--------------+                                      +---+---+
- |          |                                             |attacks |
- |          v                                             |(order) |
- |   +--------------+                                     +---+---+
+ |          |                                              |attacks|
+ |          v                                              |(order)|
+ |   +--------------+                                      +---+---+
  |   |  metrics     |  -> gcc_fraction, avg_path_length_gcc,    |
  |   |              |     diameter_gcc, global_efficiency,      |
  |   |              |     clustering, degree_stats              |

@@ -23,7 +23,15 @@ def trapezoidal_auc(x: Sequence[float], y: Sequence[float]) -> float:
     x_arr = np.array(x, dtype=float)
     y_arr = np.array(y, dtype=float)
     # Fläche unter der Kurve per Trapezregel
-    return float(np.trapz(y_arr, x_arr))
+    trapezoid_fn = getattr(np, "trapezoid", None)
+    if trapezoid_fn is None:
+        trapezoid_fn = getattr(np, "trapz", None)
+    if trapezoid_fn is not None:
+        return float(trapezoid_fn(y_arr, x_arr))
+
+    # Extremely defensive fallback (in case NumPy API differs): manual trapezoid.
+    dx = np.diff(x_arr)
+    return float(np.sum((y_arr[1:] + y_arr[:-1]) * 0.5 * dx))
 
 
 def hash_config(config: Dict[str, Any]) -> str:
