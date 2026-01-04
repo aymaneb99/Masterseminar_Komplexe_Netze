@@ -1,0 +1,43 @@
+experiment_name: "scigrid_germany_topology"
+output_dir: "results"
+
+random_seed: 42
+
+graphs:
+  - id: "SciGRID_DE"
+    type: "real"
+    model: "real_graphml"
+    path: "data/real/scigrid_germany.graphml"
+    repetitions: 3
+    preprocess:
+      giant_component_only: true
+      relabel_to_integers: true
+
+attacks:
+  - id: "random_failures"
+    type: "random"
+
+  - id: "targeted_degree"
+    type: "targeted"
+    strategy: "degree"
+
+fractions:
+  values: [0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+
+metrics:
+  - gcc_fraction
+  - gcc_size
+  - avg_path_length_gcc
+  - diameter_gcc
+  - global_efficiency
+  - global_clustering
+  - avg_local_clustering
+  - mean_degree
+  - max_degree
+  - degree_std
+
+analysis:
+  metric_for_auc: "gcc_fraction"
+  aggregate_by:
+    - "graph_id"
+    - "attack_id"

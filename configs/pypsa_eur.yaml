@@ -1,0 +1,45 @@
+experiment_name: "pypsa_eur"
+output_dir: "results"
+
+random_seed: 42
+
+graphs:
+  - id: "PyPSA_EUR"
+    type: "real"
+    model: "real_graphml"
+    path: "data/real/pypsa_eur.graphml"
+    repetitions: 1
+    preprocess:
+      giant_component_only: true
+      relabel_to_integers: true
+
+attacks:
+  - id: "random_failures"
+    type: "random"
+  - id: "degree_targeted"
+    type: "targeted"
+    strategy: "degree"
+  - id: "betweenness_targeted"
+    type: "targeted"
+    strategy: "betweenness"
+
+fractions:
+  values: [0.0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50]
+
+metrics:
+  - gcc_fractiondfg
+  - gcc_size
+  - avg_path_length_gcc
+  - diameter_gcc
+  - global_efficiency
+  - global_clustering
+  - avg_local_clustering
+  - mean_degree
+  - max_degree
+  - degree_std
+
+analysis:
+  metric_for_auc: "gcc_fraction"
+  aggregate_by:
+    - "graph_id"
+    - "attack_id"

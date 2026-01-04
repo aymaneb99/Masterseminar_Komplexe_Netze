@@ -1,0 +1,28 @@
+experiment:
+  name: er_baseline
+
+network:
+  type: erdos_renyi
+  n: 500
+  p: 0.01
+
+attacks:
+  - random
+  - degree
+  - betweenness
+
+simulation:
+  q_start: 0.0
+  q_end: 1.0
+  q_step: 0.02
+  repetitions: 10
+  seed: 42
+
+metrics:
+  - gcc_fraction
+  - diameter_gcc
+  - clustering
+
+output:
+  save_csv: true
+  save_metadata: true
