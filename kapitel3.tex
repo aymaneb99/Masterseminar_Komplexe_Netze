@@ -28,88 +28,18 @@
 
 \section{Methodik und Versuchsdesign}
 
+Um die strukturelle Robustheit eines Smart Grids gegenüber Störungen zu untersuchen, soll analysiert werden, inwiefern die Netzwerkstruktur und die Interdependenzen zwischen Strom- und Kommunikationsnetz die Anfälligkeit des Gesamtsystems gegenüber zufälligen Ausfällen und gezielten Angriffen beeinflussen. Hierfür werden im Folgenden die Modellierung der Netzwerke und das Versuchsdesign dargelegt. 
+
 \subsection{Netzwerkmodelle}
+Das Smart Grid wird als System aus zwei gekoppelten Netzwerken modelliert: Einem Stromnetz ud einem Kommunikationsnetz. Beide Netze werden jeweils als Graphen beschrieben, deren Knoten physische bzw.\ informationstechnische Komponenten repräsentieren und deren Kanten physische Leitungen oder Kommunikationsverbindungen abbilden. Diese Abstraktion ermöglicht es, strukturelle Eigenschaften unabhängig von detaillierteren physikalischen Modellen und unabhängig von dynamischen Lastflüssen zu analysieren und somit den Fokus auf die Konnektivität und Fragmentierung zu legen. 
 
-Die Untersuchung der Robustheit und Fehlertoleranz von Netzwerken erfordert
-eine bewusste Auswahl geeigneter Netzwerkmodelle. Hierbei ist das Ziel, sowohl
-abstrakte, kontrollierbare Strukturen als auch realitätsnahe Netze zu
-betrachten, um Unterschiede zwischen idealisierten Modellen und realen
-Infrastrukturen kenntlich machen zu können. In dieser Arbeit werden daher drei
-synthetische Netzwerkmodelle sowie ein reales Stromnetzmodell herangezogen.
+Die Abhängigkeit zwischen Strom- und Kommunikationsnetz werden dabei nicht als vollständige Eins-zu-eins-Verbindung modelliert, wie bei Buldyrev et al. 2010, sondern davon abweichend, als partielle, funktionale Interdependenzen: Für eine realistischere Modellierung repräsentieren einzelne Kommunikationsknoten aggregierte Steuer- und Leitsysteme, von denen mehrere Stromknoten abhängig sind (vgl. Parshani et al. 2010, S. 2; vgl. Yagan et al. 2012, S. 1709). 
 
-\paragraph{Synthetische Netzwerkmodelle:}
-Synthetische Netzwerke ermöglichen es, spezifische strukturelle Eigenschaften
-gezielt zu variieren und isoliert zu analysieren. Sie dienen als Referenz, um
-grundlegende Zusammenhänge zwischen Netzwerkstruktur und Robustheit
-systematisch zu untersuchen. 
-Als Basismodell wird der Erdős--Rényi-Zufallsgraph verwendet. In diesem Modell
-werden $n$ Knoten betrachtet, zwischen denen jede mögliche Kante mit einer
-festen Wahrscheinlichkeit $p$ unabhängig von allen anderen Kanten existiert.
-Die entstehende Gradverteilung folgt näherungsweise
-einer Poisson-Verteilung. Erdős--Rényi-Netzwerke besitzen keine ausgeprägten
-Hubs und nur eine geringe lokale Clusterbildung. Dadurch eignen sie sich als
-Vergleichsmaßstab für Netzwerke ohne strukturelle Heterogenität.\\
-Das Watts--Strogatz-Modell beschreibt Netzwerke mit Small-World-Eigenschaften, 
-also Netzwerke, in denen die meisten Knoten über wenige Schritte erreichbar sind 
-(kurze Pfade) und gleichzeitig lokale Cluster mit vielen Verbindungen untereinander existieren.
-Ausgangspunkt ist ein reguläres Ringgitter, in dem
-jeder Knoten mit $k$ nächsten Nachbarn verbunden ist. Durch zufälliges
-Umverdrahten von Kanten mit einer Wahrscheinlichkeit $p$ entstehen kurze
-mittlere Pfadlängen bei gleichzeitig erhöhtem Clustering. Diese Eigenschaften
-sind insbesondere für technische Infrastrukturnetze relevant, da sie Effizienz
-und strukturelle Redundanz kombinieren.\\
-Das Barabási--Albert-Modell erzeugt skalenfreie Netzwerke mit einer
-potenzgesetzartigen Gradverteilung. Das Modell
-basiert auf wachsendem Netzwerkaufbau und bevorzugter Anbindung neuer Knoten an
-bereits stark vernetzte Knoten. Dadurch entstehen wenige hochgradige Knoten,
-sogenannte Hubs. Skalenfreie Netzwerke gelten als robust gegenüber zufälligen
-Ausfällen, zeigen jedoch eine ausgeprägte Anfälligkeit gegenüber gezielten
-Angriffen auf zentrale Knoten. Aufgrund dieser
-Eigenschaften ist dieses Modell besonders geeignet, um Worst-Case-Szenarien für
-Angriffe auf kritische Infrastrukturen zu untersuchen.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{figures/abb1_NetModelle.png}
-  \caption{Vergleich topologischer Netzwerkmodelle. Von links nach rechts:
-   Erdős--Rényi-Zufallsgraph (homogene Struktur), 
-   Watts--Strogatz-Small-World-Netzwerk (hohe lokale Clusterbildung) 
-   und Barabási--Albert-skalenfreies Netzwerk (markante Hub-Struktur).}
-  \label{fig:netzwerkmodelle_vergleich}
-\end{figure}
-
-\paragraph{Reales Netzwerkmodell:}
-Zur Ergänzung der synthetischen Modelle wird ein reales Stromnetz betrachtet.
-Als Datengrundlage dient das PyPSA-Eur-Projekt, das ein detailliertes Modell
-des europäischen Übertragungsnetzes bereitstellt. 
-Die Netzdaten basieren auf öffentlich verfügbaren OpenStreetMap-Informationen und
-bilden Hochspannungsleitungen sowie Umspannwerke ab.\\
-Für diese Arbeit werden die Netzkomponenten aus den Dateien
-\texttt{buses.csv} und \texttt{lines.csv} extrahiert. Um eine einheitliche
-Verarbeitung zu ermöglichen, werden die Daten in einen ungerichteten Graphen
-überführt und anschließend im GraphML-Format gespeichert. Dieses Format erlaubt
-eine direkte Weiterverarbeitung mit gängigen Graphbibliotheken.\\
-Die aufbereiteten realen Netzwerke werden im Verzeichnis \texttt{data/real/}
-abgelegt, während die ursprünglichen PyPSA-Daten unter \texttt{data/pypsa/}
-gespeichert bleiben. Das Laden und optionale Vorverarbeiten der realen Netze,
-etwa die Beschränkung auf die größte verbundene Komponente oder die
-Umnummerierung der Knoten, erfolgt zentral über die Projektmodule
-\texttt{src/graph\_factory.py} und \texttt{src/real\_network\_loader.py}.
-
-\paragraph{Begründung der Modellwahl}
-Die Kombination aus synthetischen und realen Netzwerkmodellen ermöglicht einen
-strukturierten Vergleich zwischen theoretischen Idealmodellen und realen
-Infrastrukturen. Während synthetische Netze gezielte Aussagen über den Einfluss
-einzelner Strukturmerkmale erlauben, liefert das reale Stromnetz eine
-praxisnahe Referenz. Unterschiede im Robustheits- und
-Fehlertoleranzverhalten können so nicht nur quantitativ gemessen, sondern auch
-strukturell interpretiert werden. Diese Kombination bildet die Grundlage für
-die in den folgenden Abschnitten beschriebenen Störungsszenarien und
-Bewertungsmethoden.
+Die gewählte Methodik erlaubt es, grundlegende Verwundbarkeiten zu identifizieren, die aus der Topologie der Einzelnetze sowie aus ihrer Interdependenzstruktur resultieren (vgl. Buldyrev et al. 2010, S. 1025). Insbesondere können Unterschiede zwischen zufälligen Ausfällen und gezielten Angriffen auf strukturstarke Knoten, zum Einen auf das Stromnetz selbst und zum Anderen auf das Kommunikationsnetz, analysiert werden. 
 
 \subsection{Störungsszenarien}
 
-Zur Bewertung der Robustheit und Fehlertoleranz komplexer Netzwerke ist nicht
+Zur Bewertung der Robustheit komplexer Netzwerke ist nicht
 nur die zugrunde liegende Topologie entscheidend, sondern auch die Art der
 betrachteten Störungen. Unterschiedliche Ausfallmechanismen können sehr
 unterschiedliche Auswirkungen auf die Netzwerkstruktur haben. In dieser Arbeit
@@ -218,8 +148,7 @@ zunehmender Störung dar.\\
 Robustheitskurven erlauben einen direkten Vergleich unterschiedlicher
 Netzwerke und Angriffsszenarien. Flach verlaufende Kurven deuten auf eine hohe
 Robustheit hin, während ein steiler Abfall auf eine starke Verwundbarkeit
-schließen lässt.Beide Fälle sind schematisch in Abbildung 
-\ref{fig:netzwerkmodelle_vergleich} dargestellt. 
+schließen lässt.Beide Fälle sind schematisch in Abbildung~\ref{fig:netzwerkmodelle_vergleich} dargestellt. 
 In der vorliegenden Arbeit werden Robustheitskurven für
 zufällige Ausfälle sowie für gezielte Angriffe berechnet und
 gegenübergestellt.\\
@@ -243,8 +172,7 @@ Angriffsszenarien.
   \centering
   \includegraphics[width=\textwidth]{figures/fragileVsRobustCurves.jpg}
   \caption{Schematische Darstellung von Robustheitskurven für ein robustes
-  und ein fragiles Netzwerk.}
-  \label{fig:netzwerkmodelle_vergleich}
+  und ein fragiles Netzwerk.}\label{fig:netzwerkmodelle_vergleich}
 \end{figure}
 
 \paragraph{Strukturelle Ergänzungsmetriken}
@@ -288,8 +216,8 @@ wiederholt. Für jedes Netzwerkmodell und jedes Störungsszenario werden mehrere
 unabhängige Instanzen erzeugt und ausgewertet. Die Anzahl der Wiederholungen
 ist dabei konfigurierbar und wird in den jeweiligen Szenariodateien festgelegt.
 Die Wiederholungen dienen dazu, zufällige Ausreißer zu glätten und Mittelwerte
-über mehrere Läufe zu bilden. Dies ist insbesondere bei Erdős--Rényi- und
-Barabási--Albert-Netzwerken relevant, da bereits kleine strukturelle
+über mehrere Läufe zu bilden. Dies ist insbesondere bei Erdős{-}Rényi- und
+Barabási{-}Albert-Netzwerken relevant, da bereits kleine strukturelle
 Unterschiede zwischen einzelnen Instanzen das Robustheitsverhalten
 beeinflussen können. Die Aggregation über mehrere Läufe erhöht somit die
 statistische Aussagekraft der Ergebnisse.
