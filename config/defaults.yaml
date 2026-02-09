@@ -1,0 +1,42 @@
+allgemein:
+  seed: 42
+  runs: 30
+  schrittweite: 0.05  # Anteil entfernter Knoten pro Schritt
+  N: 100
+
+gp:
+  topologie: ER
+  parameter:
+    ER:
+      p: 0.06  # ergibt bei N=100 einen mittleren Grad von ca. 6
+    WS:
+      k: 6
+      beta: 0.1
+    BA:
+      m: 3
+
+gc:
+  topologie: ER
+  parameter:
+    ER:
+      p: 0.06  # Standard: mittlerer Grad ca. 6
+    WS:
+      k: 6
+      beta: 0.1
+    BA:
+      m: 3
+
+interdependenz:
+  aktiv: true
+  q: 0.8
+  r: 1
+  GC_to_GP: true
+
+stoerszenarien:
+  szenario_typ: random
+  targeted_metrik: degree
+  angreifbares_netz: GP
+
+auswertung:
+  metriken: [GCC, AUC]
+  normalisierung: true

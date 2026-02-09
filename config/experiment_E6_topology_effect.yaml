@@ -1,0 +1,34 @@
+experiments:
+  - name: E6_gp_er
+    beschreibung: Smart Grid, GP=ER, targeted (degree) auf GC
+    override:
+      modi: [smart_grid]
+      gp.topologie: ER
+      gc.topologie: ER
+      interdependenz.aktiv: true
+      interdependenz.q: 0.6
+      interdependenz.r: 1
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 200
+      allgemein.schrittweite: 0.05
+
+  - name: E6_gp_ba
+    beschreibung: Smart Grid, GP=BA, targeted (degree) auf GC
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: ER
+      interdependenz.aktiv: true
+      interdependenz.q: 0.6
+      interdependenz.r: 1
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 200
+      allgemein.schrittweite: 0.05

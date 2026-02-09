@@ -1,0 +1,62 @@
+experiments:
+  # Vergleich: konventionelles Netz vs. Smart Grid
+  - name: konventionell_gp_only
+    beschreibung: Interdependenz deaktiviert (nur GP aktiv)
+    override:
+      interdependenz.aktiv: false
+
+  - name: smartgrid_mit_interdependenz
+    beschreibung: Interdependenz aktiviert (GP + GC gekoppelt)
+    override:
+      interdependenz.aktiv: true
+
+  # Angriffsziel variieren
+  - name: angriff_gp_random
+    beschreibung: Random-Ausfälle, Angriff auf GP
+    override:
+      stoerszenarien.szenario_typ: random
+      stoerszenarien.angreifbares_netz: GP
+
+  - name: angriff_gc_random
+    beschreibung: Random-Ausfälle, Angriff auf GC
+    override:
+      stoerszenarien.szenario_typ: random
+      stoerszenarien.angreifbares_netz: GC
+      modi: [smart_grid]
+
+  # Random vs. targeted
+  - name: targeted_degree_gp
+    beschreibung: Targeted-Ausfälle nach Degree auf GP
+    override:
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GP
+
+  - name: targeted_betweenness_gp
+    beschreibung: Targeted-Ausfälle nach Betweenness auf GP
+    override:
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: betweenness
+      stoerszenarien.angreifbares_netz: GP
+
+  # Kopplungsanteil q variieren
+  - name: q_niedrig
+    beschreibung: Schwache Kopplung zwischen GP und GC
+    override:
+      interdependenz.q: 0.3
+
+  - name: q_hoch
+    beschreibung: Starke Kopplung zwischen GP und GC
+    override:
+      interdependenz.q: 0.9
+
+  # Redundanz r variieren
+  - name: redundanz_1
+    beschreibung: Minimale Redundanz der Abhängigkeiten
+    override:
+      interdependenz.r: 1
+
+  - name: redundanz_3
+    beschreibung: Erhöhte Redundanz der Abhängigkeiten
+    override:
+      interdependenz.r: 3
