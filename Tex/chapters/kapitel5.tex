@@ -1,0 +1,39 @@
+% Kapitel 5: Diskussion
+\section{Diskussion}
+\label{sec:diskussion}
+
+Die Ergebnisse der Simulationen liefern klare Aussagen zu den drei Kernaspekten der Forschungsfrage. In diesem Kapitel werden sie im Kontext von Smart Grids interpretiert, die Bedeutung der Netzwerkstruktur herausgearbeitet und die Grenzen der Modellierung offen benannt.
+
+\subsection{Interpretation im Kontext von Smart Grids}
+
+Das wohl auffälligste Ergebnis ist die enorme Effektstärke bei gezielten Angriffen auf skalenfreie Netze. Mit einer AUC-Differenz von über 0,5 zwischen zufälligen und gezielten Störungen zeigt sich, dass BA-Netze eine grundsätzliche strukturelle Schwäche haben. Für Smart Grids ist das relevant, weil reale Stromnetze in vielen Studien scale-free-ähnliche Eigenschaften zeigen -- zumindest auf bestimmten Ebenen der Infrastruktur.
+
+Allerdings sollte man hier vorsichtig sein. Reale Netze sind selten reine BA-Netze. Sie haben räumliche Beschränkungen, regulatorische Vorgaben und historisch gewachsene Strukturen, die sich nicht perfekt in einem einzelnen Netzwerkmodell abbilden lassen. Was die Simulation zeigt, ist eher: Wenn ein Netz Hub-Strukturen aufweist, dann ist es verwundbar. Und je ausgeprägter diese Strukturen sind, desto schlimmer.
+
+Ein weiterer Punkt betrifft die Rolle des Kommunikationsnetzes. In der öffentlichen Debatte um Cyberangriffe auf kritische Infrastruktur wird oft befürchtet, dass ein Angriff auf die IT-Ebene das physische Netz lahmlegen könnte. Unsere Ergebnisse zeigen, dass das tatsächlich möglich ist -- aber nur unter bestimmten Bedingungen. Bei zufälliger Abhängigkeitszuweisung bleibt das Stromnetz trotz vollständiger Kopplung erstaunlich robust (AUC = 0,74). Der eigentliche Kipppunkt ist die korrelierte Struktur der Abhängigkeiten.
+
+Das hat eine praktische Implikation: Wer die Robustheit eines Smart Grids erhöhen will, sollte darauf achten, dass nicht ausgerechnet die wichtigsten physischen Komponenten von den wichtigsten Kommunikationskomponenten abhängen. Eine gewisse Entkopplung der Hierarchien könnte das System deutlich widerstandsfähiger machen.
+
+\subsection{Warum die Struktur entscheidend ist}
+
+Auf einer abstrakteren Ebene zeigen die Ergebnisse etwas, das in der Netzwerktheorie seit Albert und Barabási bekannt ist, aber im Smart-Grid-Kontext eine besondere Wendung bekommt: Robustheit ist keine intrinsische Eigenschaft eines Systems, sondern hängt fundamental von der Struktur ab -- und zwar nicht nur von der Struktur eines einzelnen Netzes, sondern auch von der Struktur der Kopplung zwischen Netzen.
+
+Das ist vielleicht der wichtigste Beitrag dieser Arbeit. Die Experimente F4 und F5 unterscheiden sich nur in einem einzigen Parameter -- der Art der Abhängigkeitszuweisung -- und trotzdem schwankt die AUC zwischen 0,74 und 0,23. Das zeigt, dass Interdependenz per se kein Problem ist. Das Problem entsteht erst, wenn die Kopplung die vorhandenen Verwundbarkeiten verstärkt statt sie zu verteilen.
+
+In gewisser Weise ist das eine gute Nachricht. Denn wenn die Struktur der Kopplung der entscheidende Faktor ist, dann ist das auch etwas, das man gestalten kann. Im Gegensatz zur Topologie des physischen Netzes, die oft durch geographische und technische Gegebenheiten festgelegt ist, lässt sich die Zuordnung von Kommunikationsinfrastruktur zu physischen Komponenten prinzipiell frei wählen.
+
+\subsection{Grenzen der Modellierung}
+
+Jede Simulation ist eine Vereinfachung der Realität, und es ist wichtig, die Grenzen transparent zu machen.
+
+\textbf{Binäres Zustandsmodell.} In dieser Arbeit kennen Knoten nur zwei Zustände: funktionsfähig oder ausgefallen. In der Realität gibt es Abstufungen -- ein Umspannwerk kann teilweise funktionieren, ein Router kann überlastet, aber nicht komplett ausgefallen sein. Lastflüsse, Kapazitätsgrenzen und partielle Degradation werden nicht berücksichtigt.
+
+\textbf{Statische Angriffe.} Die Angreihenfolge wird zu Beginn der Simulation festgelegt und ändert sich nicht. In der Realität könnte ein Angreifer adaptive Strategien verfolgen und seine nächsten Ziele anhand der aktuellen Netzsituation wählen. Ebenso fehlen Reparaturmechanismen -- einmal ausgefallene Knoten bleiben permanent ausgefallen.
+
+\textbf{Synthetische Netze.} Die verwendeten ER- und BA-Netze sind mathematische Modelle. Reale Stromnetze haben zusätzliche Eigenschaften wie räumliche Einbettung, hierarchische Strukturen und regulatorische Randbedingungen, die in den Modellen nicht abgebildet werden. Die Ergebnisse zeigen Tendenzen und Mechanismen auf, sollten aber nicht als quantitative Vorhersagen für konkrete Netze verstanden werden.
+
+\textbf{Korrelierte Abhängigkeiten als Modellerweiterung.} Die Einführung der korrelierten Abhängigkeitszuweisung ist ein eigener Beitrag dieser Arbeit und kein Standardbestandteil des klassischen Interdependenzmodells nach Buldyrev et al. Sie bildet eine plausible reale Situation ab, wurde aber nicht mit empirischen Daten validiert. Die extremen Effekte, die sich daraus ergeben, sind an die idealisierte Annahme einer perfekten Grad-Korrelation gebunden.
+
+\textbf{Keine kaskadierenden Ausfälle.} Das Modell implementiert einen einmaligen Ausbreitungsschritt: Kommunikationsknoten fallen aus, abhängige Stromknoten fallen aus. In der Literatur zu interdependenten Netzen werden oft iterative Kaskaden betrachtet, bei denen der Ausfall von Stromknoten wiederum weitere Kommunikationsknoten beeinträchtigt. Solche Rückkopplungseffekte wurden hier bewusst nicht modelliert, um die Analyse auf den Effekt der initialen Kopplung zu fokussieren.
+
+Trotz dieser Einschränkungen sind die qualitativen Aussagen der Arbeit -- insbesondere die überragende Bedeutung der Kopplungsstruktur -- robust und konsistent mit der bestehenden Literatur.

@@ -1,0 +1,33 @@
+% Kapitel 6: Fazit und Ausblick
+\section{Fazit und Ausblick}
+\label{sec:fazit}
+
+\subsection{Beantwortung der Leitfrage}
+
+Die Ausgangsfrage dieser Arbeit lautete: \textit{Wie beeinflusst die Netzwerkstruktur eines Smart Grids die Fehlertoleranz beziehungsweise die Robustheit gegenüber zufälligen Ausfällen und gezielten Angriffen?}
+
+Die Antwort lässt sich in drei Punkten zusammenfassen.
+
+Erstens: Die Topologie des Netzes hat einen erheblichen Einfluss auf die Robustheit. Homogene Netze (ER) sind gegenüber zufälligen Ausfällen deutlich widerstandsfähiger als skalenfreie Netze (BA). Bei gezielten Angriffen kehrt sich das Bild nicht um -- im Gegenteil, skalenfreie Netze sind dann sogar noch verwundbarer, weil ihre Hub-Struktur einen klaren Angriffspunkt bietet.
+
+Zweitens: Die Art der Störung macht einen fundamentalen Unterschied. Die AUC-Differenz zwischen zufälligen und gezielten Angriffen auf ein BA-Netz beträgt über 0,5 -- das ist ein enormer Effekt. Für die Praxis bedeutet das, dass die Frage, ob ein System gegen zufällige Ausfälle robust ist, wenig darüber aussagt, ob es auch gegen gezielte Angriffe bestehen kann.
+
+Drittens -- und das ist vielleicht das überraschendste Ergebnis -- ist nicht die Interdependenz an sich das Problem, sondern deren Struktur. Ein Smart Grid mit zufällig zugewiesenen Abhängigkeiten bleibt selbst bei vollständiger Kopplung relativ robust. Erst wenn die Abhängigkeiten so strukturiert sind, dass wichtige Stromknoten von wichtigen Kommunikationsknoten abhängen, wird ein Angriff auf das Kommunikationsnetz genauso verheerend wie ein direkter Angriff auf das Stromnetz.
+
+\subsection{Erkenntnisse}
+
+Über die direkte Beantwortung der Leitfrage hinaus ergeben sich einige weitergehende Erkenntnisse.
+
+Redundanz bei den Abhängigkeitsbeziehungen kann die Robustheit substanziell erhöhen. Bereits eine Verdopplung der Abhängigkeiten ($r = 2$) reicht aus, um die AUC auf nahezu das Niveau eines ungekoppelten Netzes zu bringen. Das deutet darauf hin, dass selbst einfache Schutzmaßnahmen einen spürbaren Effekt haben können.
+
+Die Wahl des Netzwerkmodells beeinflusst die Ergebnisse stark. Experimente, die ausschließlich auf ER-Netzen basieren, unterschätzen die Verwundbarkeit realer Systeme möglicherweise erheblich. Für aussagekräftige Analysen ist es daher wichtig, heterogene Topologien einzubeziehen.
+
+\subsection{Ausblick}
+
+Mehrere Aspekte konnten in dieser Arbeit nicht behandelt werden und bieten Ansatzpunkte für weiterführende Untersuchungen.
+
+Ein naheliegender nächster Schritt wäre die Einführung kaskadierender Ausfälle, bei denen der Ausfall von Stromknoten rückwirkend auch Kommunikationsknoten beeinträchtigt. Das würde die Dynamik interdependenter Netze realistischer abbilden und könnte die beobachteten Effekte noch verstärken.
+
+Interessant wäre auch, das Modell auf reale Netztopologien anzuwenden -- etwa auf das europäische Hochspannungsnetz oder auf regionale Verteilnetze, für die öffentlich zugängliche Daten existieren. Das würde erlauben, die in dieser Arbeit identifizierten Mechanismen unter realistischeren Bedingungen zu überprüfen.
+
+Schließlich bleibt die Frage, wie sich die korrelierte Abhängigkeitszuweisung bei Redundanz verhält. Unsere Ergebnisse zeigen, dass Redundanz bei zufälliger Zuweisung gut schützt. Ob das auch bei korrelierter Struktur gilt -- wo beide redundanten Abhängigkeiten eines Stromknotens möglicherweise ebenfalls an Hub-Kommunikationsknoten geknüpft sind -- wäre ein lohnender Gegenstand für zukünftige Simulationen.

@@ -37,6 +37,7 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 			q=float(inter_cfg["q"]),
 			r=int(inter_cfg["r"]),
 			seed=seed,
+			correlation_mode=inter_cfg.get("correlation_mode", "random"),
 		)
 
 	angreifbares_netz = szenario["angreifbares_netz"]

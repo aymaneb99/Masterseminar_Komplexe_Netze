@@ -11,12 +11,20 @@ def create_dependency_links(
 	q: float,
 	r: int,
 	seed: int,
+	correlation_mode: str = "random",
 ) -> Dict[int, Set[int]]:
-	"""Erzeugt Abhängigkeiten von GP-Knoten zu GC-Knoten (GC → GP)."""
+	"""Erzeugt Abhängigkeiten von GP-Knoten zu GC-Knoten (GC → GP).
+	
+	Args:
+		correlation_mode: "random" (zufällige Zuweisung) oder 
+		                  "degree" (wichtige GP-Knoten → wichtige GC-Knoten)
+	"""
 	if not 0.0 <= q <= 1.0:
 		raise ValueError("q muss in [0, 1] liegen.")
 	if r < 1:
 		raise ValueError("r muss >= 1 sein.")
+	if correlation_mode not in {"random", "degree"}:
+		raise ValueError("correlation_mode muss 'random' oder 'degree' sein.")
 
 	gp_nodes = list(gp.nodes())
 	gc_nodes = list(gc.nodes())
@@ -25,12 +33,28 @@ def create_dependency_links(
 
 	rng = _rng(seed)
 	dep_count = int(round(q * len(gp_nodes)))
-	dependent_gp_nodes = rng.sample(gp_nodes, dep_count)
+
+	if correlation_mode == "degree":
+		# Korrelierte Zuweisung: Sortiere nach Degree (absteigend)
+		gp_sorted = sorted(gp_nodes, key=lambda n: gp.degree(n), reverse=True)
+		gc_sorted = sorted(gc_nodes, key=lambda n: gc.degree(n), reverse=True)
+		dependent_gp_nodes = gp_sorted[:dep_count]
+	else:
+		# Zufällige Zuweisung (Standardverhalten)
+		dependent_gp_nodes = rng.sample(gp_nodes, dep_count)
+		gc_sorted = gc_nodes  # Nicht verwendet bei random
 
 	dependencies: Dict[int, Set[int]] = {}
-	for gp_node in gp_nodes:
+	for idx, gp_node in enumerate(gp_nodes):
 		if gp_node in dependent_gp_nodes:
-			chosen_gc = set(rng.sample(gc_nodes, min(r, len(gc_nodes))))
+			if correlation_mode == "degree":
+				# Weise den i-ten GP-Knoten den top-r GC-Knoten zu
+				# (zyklisch, falls mehr abhängige GP-Knoten als GC-Knoten)
+				gp_rank = dependent_gp_nodes.index(gp_node)
+				gc_indices = [(gp_rank + j) % len(gc_sorted) for j in range(min(r, len(gc_sorted)))]
+				chosen_gc = set(gc_sorted[i] for i in gc_indices)
+			else:
+				chosen_gc = set(rng.sample(gc_nodes, min(r, len(gc_nodes))))
 			dependencies[gp_node] = chosen_gc
 		else:
 			dependencies[gp_node] = set()

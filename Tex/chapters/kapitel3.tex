@@ -1,0 +1,97 @@
+% Kapitel 3: Methodik und Bewertungsmetriken
+% Hinweis: Abschnitt 3.1 (Netzwerkmodell und Annahmen) ist separat.
+
+\section{Methodik und Bewertungsmetriken}
+
+Platzhalter
+
+\subsection{Störszenarien}
+\label{sec:stoerszenarien}
+
+Um die Robustheit eines Netzwerks zu bewerten, braucht es zunächst eine klare Vorstellung davon, gegen welche Art von Störung man es testen möchte. In dieser Arbeit werden zwei grundsätzlich verschiedene Szenarien betrachtet, die jeweils unterschiedliche Bedrohungsmodelle abbilden.
+
+\subsubsection{Zufällige Ausfälle}
+
+Der erste Fall sind zufällige Ausfälle. Gemeint sind damit Störungen, die ohne gezielten Eingriff entstehen -- etwa durch Alterung von Komponenten, schlechtes Wetter oder schlicht technische Defekte. In der Simulation heißt das: Knoten werden in einer zufälligen Reihenfolge Schritt für Schritt entfernt, und nach jedem Schritt wird die verbleibende Netzstruktur analysiert.
+
+Das Besondere an diesem Szenario ist, dass es keine Systematik gibt. Es trifft beliebige Knoten, unabhängig von ihrer Bedeutung im Netz. Das hat zur Folge, dass homogene Netze, bei denen alle Knoten ungefähr gleich viele Verbindungen haben, solche Ausfälle in der Regel gut verkraften. Weniger gut sieht es bei heterogenen Netzen aus, aber dazu später mehr.
+
+Wenn man im Smart-Grid-Modell arbeitet, kommt noch ein weiterer Aspekt hinzu: Fällt ein Kommunikationsknoten aus, der für bestimmte Stromknoten zuständig ist, dann können diese Stromknoten ebenfalls ausfallen -- nicht weil sie selbst defekt sind, sondern weil sie nicht mehr gesteuert werden können.
+
+\subsubsection{Gezielte Angriffe}
+
+Das zweite Szenario sind gezielte Angriffe. Hier wird davon ausgegangen, dass ein Angreifer das Netz kennt und bewusst die wichtigsten Komponenten ausschaltet. Die Frage ist natürlich: Was heißt ''wichtig''?
+
+In dieser Arbeit wird die Degree-Zentralität als Maß verwendet, also die Anzahl der direkten Verbindungen eines Knotens. Knoten mit vielen Verbindungen -- sogenannte Hubs -- werden zuerst entfernt. Der Gedanke dahinter ist einfach: Wer viele Verbindungen hat, hält auch viel zusammen. Fällt so ein Knoten aus, reißt er unter Umständen ganze Teile des Netzes mit.
+
+Die Umsetzung funktioniert so: Zu Beginn der Simulation werden alle Knoten nach ihrem Grad sortiert, und dann werden sie in dieser Reihenfolge entfernt. Das ist natürlich ein idealisierter Angreifer, der perfekte Informationen hat -- aber genau darum geht es ja: den Worst Case zu verstehen.
+
+\subsubsection{Wo wird angegriffen?}
+
+Eine Frage, die im Kontext von Smart Grids wichtig wird, ist: Greift man das physische Stromnetz an oder das Kommunikationsnetz?
+
+Bei konventionellen Netzen stellt sich diese Frage nicht, weil es nur das physische Netz gibt. Im Smart Grid aber existieren beide Schichten, und ein Angriff auf das Kommunikationsnetz kann über die Interdependenzen auch das Stromnetz treffen.
+
+Das ist interessant, weil Kommunikationsnetze manchmal leichter angreifbar sind als physische Infrastruktur -- gerade bei Cyberangriffen. Gleichzeitig hängt die Wirkung eines solchen Angriffs stark davon ab, wie die Abhängigkeiten strukturiert sind. Dazu kommen wir gleich.
+
+\subsubsection{Kopplungsgrad und Redundanz}
+
+Zwei Parameter steuern, wie stark die Kopplung zwischen den Netzebenen ist:
+
+\begin{description}
+    \item[Kopplungsgrad $q$:] Der Anteil der Stromknoten, die überhaupt von einem Kommunikationsknoten abhängen. Bei $q = 0$ gibt es keine Interdependenz, bei $q = 1$ hängt jeder Stromknoten von mindestens einem Kommunikationsknoten ab.
+    \item[Redundanz $r$:] Die Anzahl der Kommunikationsknoten, von denen ein abhängiger Stromknoten versorgt wird. Bei $r = 1$ reicht ein einziger Ausfall, bei $r = 2$ müssen beide Abhängigkeiten ausfallen, damit der Stromknoten betroffen ist.
+\end{description}
+
+Je höher $q$, desto stärker die Kopplung. Je höher $r$, desto robuster das System gegen einzelne Ausfälle. Das sind zwei Stellschrauben, an denen man drehen kann, um verschiedene Szenarien zu modellieren.
+
+\subsubsection{Korrelierte Abhängigkeiten}
+
+Ein weiterer Punkt, der sich als wichtig herausgestellt hat, ist die Frage, \textit{welche} Kommunikationsknoten für welche Stromknoten zuständig sind.
+
+Die einfachste Variante ist eine zufällige Zuweisung: Jeder abhängige Stromknoten wird einem beliebigen Kommunikationsknoten zugeordnet. Das ist einfach zu implementieren, aber vielleicht nicht besonders realistisch.
+
+Die Alternative ist eine korrelierte Zuweisung: Wichtige Stromknoten (solche mit vielen Verbindungen) werden von wichtigen Kommunikationsknoten (ebenfalls mit vielen Verbindungen) gesteuert. Das bildet reale Infrastrukturen besser ab, bei denen zentrale Kraftwerke oder Umspannwerke oft auch mit zentralen Steuersystemen verbunden sind.
+
+Der Effekt ist erheblich. Bei korrelierter Zuweisung trifft ein gezielter Angriff auf die Kommunikations-Hubs automatisch auch die wichtigsten Stromknoten. Das Netz zerfällt dann viel schneller.
+
+\subsection{Netzwerkfragmentierung und Robustheitsmetriken}
+\label{sec:metriken}
+
+Nachdem jetzt klar ist, welche Störungen simuliert werden, stellt sich die Frage: Wie misst man eigentlich, wie gut oder schlecht ein Netz damit umgeht?
+
+\subsubsection{Was ist Fragmentierung?}
+
+Im Grunde geht es bei der Robustheit eines Netzwerks um die Frage, ob es zusammenhängend bleibt. Ein zusammenhängendes Netz ist eines, in dem man von jedem Knoten zu jedem anderen Knoten gelangen kann. Fallen Knoten aus, kann es passieren, dass das Netz in mehrere isolierte Teile zerfällt -- dann spricht man von Fragmentierung.
+
+Für ein Stromnetz ist das ein Problem. Wenn Teile des Netzes voneinander getrennt sind, kann weder Energie noch Information zwischen ihnen fließen. Die Versorgungssicherheit ist dann nicht mehr gewährleistet.
+
+\subsubsection{Die größte Zusammenhangskomponente (GCC)}
+
+Um Fragmentierung zu messen, schaut man sich die größte zusammenhängende Komponente an -- englisch Giant Connected Component oder kurz GCC. Das ist die größte Gruppe von Knoten, die nach den Ausfällen noch miteinander verbunden ist.
+
+In dieser Arbeit wird die GCC als Anteil an der ursprünglichen Knotenzahl ausgedrückt:
+\begin{equation}
+    \text{GCC}(G') = \frac{|V_{\text{GCC}}|}{|V_{\text{original}}|}
+\end{equation}
+
+Ein Wert von 1 bedeutet, dass das gesamte Netz noch zusammenhängt. Ein Wert nahe 0 heißt, dass fast nichts mehr zusammenhängt. Die GCC ist kein perfektes Maß -- sie sagt zum Beispiel nichts darüber, wie die kleineren Komponenten aussehen -- aber sie ist einfach zu berechnen und gibt einen guten ersten Eindruck.
+
+\subsubsection{Robustheitskurven}
+
+Ein einzelner GCC-Wert sagt nicht viel. Interessanter ist es, zu beobachten, wie sich die GCC verändert, wenn immer mehr Knoten ausfallen. Das ergibt eine Kurve: Auf der x-Achse steht der Anteil der entfernten Knoten (von 0 bis 1), auf der y-Achse der GCC-Anteil.
+
+Diese Robustheitskurven sind das zentrale Visualisierungswerkzeug dieser Arbeit. Eine Kurve, die lange oben bleibt und erst spät abfällt, zeigt ein robustes Netz. Eine Kurve, die sofort steil nach unten geht, zeigt ein fragiles Netz.
+
+Interessant sind auch die Wendepunkte. Manchmal bleibt ein Netz lange stabil und bricht dann plötzlich zusammen -- das deutet auf kritische Schwellwerte hin.
+
+\subsubsection{Fläche unter der Kurve (AUC)}
+
+Für den Vergleich verschiedener Szenarien braucht man am Ende doch eine einzelne Zahl. Dafür eignet sich die Fläche unter der Robustheitskurve, kurz AUC (Area Under Curve):
+\begin{equation}
+    \text{AUC} = \int_0^1 \text{GCC}(f) \, df
+\end{equation}
+
+Die AUC gibt an, wie viel Konnektivität das Netz im Durchschnitt über alle Entfernungsgrade hinweg behält. Ein Wert nahe 1 heißt: durchgehend gut vernetzt. Ein Wert nahe 0 heißt: das Netz zerfällt schnell.
+
+In der Praxis wird die AUC numerisch mit der Trapezregel berechnet. Um statistische Schwankungen auszugleichen, werden alle Experimente 30-mal wiederholt und die AUC über diese Läufe gemittelt.

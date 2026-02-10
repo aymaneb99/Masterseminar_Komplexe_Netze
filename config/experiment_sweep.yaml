@@ -1,0 +1,124 @@
+# Parameter-Sweep Experimente für Funktionsscharen
+# Visualisierung: Robustheitskurven mit unterschiedlichen q- und r-Werten
+# Alle Experimente: BA/BA, korrelierte Dependencies, targeted auf GC
+
+experiments:
+  # ========================================
+  # SWEEP 1: Redundanz r bei q=1.0
+  # Zeigt: Schutzwirkung steigender Redundanz
+  # Legendenformat: "r=1", "r=2", "r=3"
+  # ========================================
+
+  - name: sweep_r1_q10
+    beschreibung: "r=1 (q=1.0, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: sweep_r2_q10
+    beschreibung: "r=2 (q=1.0, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 2
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: sweep_r3_q10
+    beschreibung: "r=3 (q=1.0, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 3
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  # ========================================
+  # SWEEP 2: Kopplungsgrad q bei r=1
+  # Zeigt: Schwellenverhalten der Interdependenz
+  # Legendenformat: "q=0.6", "q=0.8", "q=1.0"
+  # ========================================
+
+  - name: sweep_q06_r1
+    beschreibung: "q=0.6 (r=1, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 0.6
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: sweep_q08_r1
+    beschreibung: "q=0.8 (r=1, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 0.8
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: sweep_q10_r1
+    beschreibung: "q=1.0 (r=1, korreliert)"
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05

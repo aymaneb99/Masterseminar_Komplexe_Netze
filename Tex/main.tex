@@ -1,0 +1,90 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+% Sprache/Encoding
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % bei pdflatex ok; bei lualatex/xelatex weglassen
+\usepackage{lmodern}
+\usepackage{float}
+
+% Layout
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+
+% Nützliche Pakete
+\usepackage[autostyle=true, german=quotes]{csquotes}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+% Hyperlinks (möglichst spät laden)
+\usepackage[hidelinks]{hyperref}
+\usepackage{bookmark}
+
+% --- OPTIONAL: Literatur mit natbib ---
+\usepackage[round,authoryear]{natbib}
+
+% --- Wichtig für modulare Dateien ---
+% Damit nur main.tex kompiliert wird:
+% (in Unterdateien nichts mit \documentclass usw.)
+
+\begin{document}
+
+% ---------- Titelblatt ----------
+\begin{titlepage}
+\centering
+
+% \vspace*{2cm}
+
+Seminararbeit zum Thema:\\ [1.5em]
+\textbf{Fehlertoleranz und Robustheit eines
+komplexen Smart-Grid-Netzwerks
+}\\[1.5em]
+
+Fakultät für Mathematik und Informatik\\
+FernUniversität in Hagen\\[1.5em]
+
+\includegraphics[width=10cm]{figures/fu-hagen-logo.png}
+
+%\vspace{3cm}
+
+eingereicht bei:\\
+apl. Prof. Dr. Zhong Li\\[4em]
+
+eingereicht von:\\
+x,y,z\\[4em]
+
+
+Abgabedatum: 15.02.2026
+
+\end{titlepage}
+
+% ---------- Verzeichnisse ----------
+\pagenumbering{Roman}
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+
+% ---------- Kapitel modular einbinden ----------
+\input{chapters/kapitel1}
+\input{chapters/kapitel2}
+\input{chapters/kapitel3}
+\input{chapters/kapitel4}
+\input{chapters/kapitel5}
+\input{chapters/kapitel6}
+
+
+% ---------- Literatur ----------
+\clearpage
+\appendix
+\section{Anhang}
+\subsection{Quellcode (GitHub)}
+Der vollständige Quellcode zur Seminararbeit ist öffentlich verfügbar unter:
+
+\url{https://github.com/aymaneb99/Masterseminar_Komplexe_Netze}
+\label{sec:anhang}
+
+\bibliographystyle{plainnat}
+\bibliography{literatur}
+
+\end{document}

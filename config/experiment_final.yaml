@@ -1,0 +1,114 @@
+# Finales Experimentset für Seminararbeit
+# Forschungsfrage: Wie beeinflusst die Netzwerkstruktur eines Smart Grids dessen 
+# Fehlertoleranz und Robustheit gegenüber zufälligen Ausfällen und gezielten Angriffen?
+
+experiments:
+  # ========================================
+  # BLOCK 1: Topologie-Effekt (ER vs BA)
+  # ========================================
+
+  - name: F1_baseline_er_random
+    beschreibung: Konventionell, ER-Topologie, random auf GP (Referenz homogenes Netz)
+    override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: ER
+      stoerszenarien.szenario_typ: random
+      stoerszenarien.angreifbares_netz: GP
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: F2_baseline_ba_random
+    beschreibung: Konventionell, BA-Topologie, random auf GP (Referenz skalenfreies Netz)
+    override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: BA
+      stoerszenarien.szenario_typ: random
+      stoerszenarien.angreifbares_netz: GP
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  # ========================================
+  # BLOCK 2: Random vs Targeted (BA)
+  # ========================================
+
+  - name: F3_baseline_ba_targeted
+    beschreibung: Konventionell, BA-Topologie, targeted (degree) auf GP
+    override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: BA
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GP
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  # ========================================
+  # BLOCK 3: Smart Grid Interdependenz
+  # ========================================
+
+  - name: F4_smartgrid_random_deps
+    beschreibung: Smart Grid, BA/BA, random dependencies, targeted auf GC
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 1
+      interdependenz.correlation_mode: random
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  - name: F5_smartgrid_correlated_deps
+    beschreibung: Smart Grid, BA/BA, korrelierte dependencies, targeted auf GC (HAUPTEXPERIMENT)
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
+
+  # ========================================
+  # BLOCK 4: Schutzmaßnahme Redundanz
+  # ========================================
+
+  - name: F6_smartgrid_redundanz
+    beschreibung: Smart Grid, ER/ER, random deps, r=2 (Schutzwirkung Redundanz)
+    override:
+      modi: [smart_grid]
+      gp.topologie: ER
+      gc.topologie: ER
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 2
+      interdependenz.correlation_mode: random
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+      allgemein.seed: 42
+      allgemein.runs: 30
+      allgemein.N: 500
+      allgemein.schrittweite: 0.05
