@@ -5,3 +5,13 @@ __pycache__/
 
 # Outputs
 outputs/
+
+# Dokumentation / Präsentation / Analyse (nicht für Code nötig)
+Tex/
+Präsifolien/
+Weekly/
+README
+README.md
+analysis/
+analysis.md
+Analysis.md

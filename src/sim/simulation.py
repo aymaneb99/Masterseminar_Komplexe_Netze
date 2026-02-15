@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import networkx as nx
 
-from src.interdependence.links import create_dependency_links, propagate_failures
+from src.interdependence.links import create_dependency_links, propagate_cascade, propagate_failures
 from src.metrics.gcc import compute_gcc_fraction
 from src.networks.gc import create_gc_network
 from src.networks.gp import create_gp_network
@@ -26,7 +26,7 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 
 	gc: nx.Graph | None = None
 	if mode == "smart_grid":
-		gc = create_gc_network(config, seed)
+		gc = create_gc_network(config, seed + 1000)
 
 	interdependenz_aktiv = mode == "smart_grid" and bool(inter_cfg["aktiv"])
 	dependencies = {}
@@ -56,6 +56,11 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 	else:
 		raise ValueError("szenario_typ muss 'random' oder 'targeted' sein.")
 
+	kaskade_aktiv = interdependenz_aktiv and bool(inter_cfg.get("kaskade", False))
+	max_cascade_steps = int(inter_cfg.get("max_cascade_steps", 100))
+
+	original_n = gp.number_of_nodes()
+
 	curve: List[Dict[str, float]] = []
 	for fraction in sorted(failures.keys()):
 		failed_nodes = failures[fraction]
@@ -64,7 +69,17 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 		if angreifbares_netz == "GP":
 			gp_copy.remove_nodes_from(failed_nodes)
 		else:
-			if interdependenz_aktiv:
+			if kaskade_aktiv:
+				cascade_result = propagate_cascade(
+					gp=gp_copy,
+					gc=gc,
+					dependencies=dependencies,
+					failed_gc_nodes=set(failed_nodes),
+					max_steps=max_cascade_steps,
+				)
+				# Finale GP-Ausfälle auf die lokale Kopie anwenden
+				gp_copy.remove_nodes_from(cascade_result.failed_gp)
+			elif interdependenz_aktiv:
 				failed_gp = propagate_failures(
 					gp=gp_copy,
 					gc=gc,
@@ -73,7 +88,7 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 				)
 				gp_copy.remove_nodes_from(failed_gp)
 
-		gcc_frac = compute_gcc_fraction(gp_copy)
+		gcc_frac = compute_gcc_fraction(gp_copy, original_n=original_n)
 		curve.append({"removed_frac": float(fraction), "gcc_frac": float(gcc_frac)})
 
 	meta = {
@@ -86,6 +101,7 @@ def run_single_simulation(config: Dict[str, Any], seed: int, mode: str) -> Dict[
 		"angreifbares_netz": angreifbares_netz,
 		"targeted_metrik": szenario.get("targeted_metrik"),
 		"interdependenz_aktiv": bool(inter_cfg["aktiv"]),
+		"kaskade": kaskade_aktiv,
 		"q": float(inter_cfg["q"]),
 		"r": int(inter_cfg["r"]),
 	}

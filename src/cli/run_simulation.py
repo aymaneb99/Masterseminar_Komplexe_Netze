@@ -69,7 +69,7 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _load_config(experiment_name: str | None, experiment_file: str | None) -> Dict[str, Any]:
-	"""Lädt defaults.yaml und wendet optional Experiment-Overrides an."""
+	"""Lädt defaults.yaml und wendet Experiment-Overrides an."""
 	base_path = Path(__file__).resolve().parents[2]
 	defaults_path = base_path / "config" / "defaults.yaml"
 	experiments_path = Path(experiment_file) if experiment_file else (base_path / "config" / "experiment.yaml")

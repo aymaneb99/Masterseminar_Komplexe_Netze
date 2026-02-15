@@ -2,41 +2,44 @@ allgemein:
   seed: 42
   runs: 30
   schrittweite: 0.05  # Anteil entfernter Knoten pro Schritt
-  N: 100
+  N: 500
 
 gp:
-  topologie: ER
+  topologie: BA
   parameter:
     ER:
-      p: 0.06  # ergibt bei N=100 einen mittleren Grad von ca. 6
+      p: 0.012  # bei N=500 ->⟨k⟩ ≈ 6
     WS:
       k: 6
       beta: 0.1
     BA:
-      m: 3
+      m: 3       # ⟨k⟩ = 2m·(1 − m/N) ≈ 6
 
 gc:
-  topologie: ER
+  topologie: BA
+  N: 50  # GC kleiner als GP: aggregierte Steuerknoten
   parameter:
     ER:
-      p: 0.06  # Standard: mittlerer Grad ca. 6
+      p: 0.122   # bei N=50 -> ⟨k⟩ ≈ 6 
     WS:
       k: 6
       beta: 0.1
     BA:
-      m: 3
+      m: 3       # bei N=50 → ⟨k⟩ ≈ 5.6
 
 interdependenz:
   aktiv: true
-  q: 0.8
+  q: 1.0
   r: 1
   GC_to_GP: true
-  correlation_mode: random  # "random" oder "degree"
+  correlation_mode: degree  # "random" oder "degree"
+  kaskade: false
+  max_cascade_steps: 100
 
 stoerszenarien:
-  szenario_typ: random
+  szenario_typ: targeted
   targeted_metrik: degree
-  angreifbares_netz: GP
+  angreifbares_netz: GC
 
 auswertung:
   metriken: [GCC, AUC]

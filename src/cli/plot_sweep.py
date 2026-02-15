@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
-"""
-Kombinierte Visualisierung mehrerer Robustheitskurven.
-
-Verwendung:
-    python src/cli/plot_sweep.py <output_dir1> <output_dir2> ... --title "Plot Title" --output combined_plot.png
-    
-Beispiel (r-Sweep):
-    python src/cli/plot_sweep.py outputs/sweep_r1_* outputs/sweep_r2_* outputs/sweep_r3_* \
-        --title "Redundanz-Sweep (q=1.0, korreliert)" --output r_sweep.png
-
-Beispiel (q-Sweep):
-    python src/cli/plot_sweep.py outputs/sweep_q06_* outputs/sweep_q08_* outputs/sweep_q10_* \
-        --title "Kopplungsgrad-Sweep (r=1, korreliert)" --output q_sweep.png
-"""
+"""Erstellt einen gemeinsamen Plot aus mehreren Experiment-Ordnern."""
 
 from __future__ import annotations
 
@@ -45,22 +32,17 @@ def load_experiment_data(output_dir: Path) -> Tuple[pd.DataFrame, Dict]:
 
 
 def extract_label_from_dir(dir_name: str, param: str = "auto") -> str:
-    """Extrahiert ein sinnvolles Label aus dem Ordnernamen.
-    
-    Args:
-        dir_name: Name des Verzeichnisses
-        param: "r", "q" oder "auto" (automatische Erkennung basierend auf Position)
-    """
+    """Ermittelt ein Label aus dem Ordnernamen."""
     parts = dir_name.split("_")
     
     r_val = None
     q_val = None
     
     for part in parts:
-        # r-Wert extrahieren
+        # r-Wert lesen
         if part.startswith("r") and len(part) >= 2 and part[1:].isdigit():
             r_val = part[1:]
-        # q-Wert extrahieren
+        # q-Wert lesen
         if part.startswith("q") and len(part) >= 2:
             val = part[1:]
             if val == "10":
@@ -74,21 +56,21 @@ def extract_label_from_dir(dir_name: str, param: str = "auto") -> str:
             elif len(val) == 2 and val.isdigit():
                 q_val = f"0.{val[0]}"
     
-    # Wähle basierend auf param
+    # Label nach Modus wählen
     if param == "r" and r_val:
         return f"r={r_val}"
     elif param == "q" and q_val:
         return f"q={q_val}"
     elif param == "auto":
-        # Auto: Schaue auf das erste Segment nach "sweep_"
+        # Automatisch aus dem ersten Segment ableiten
         if len(parts) >= 2:
-            first_param = parts[1]  # sweep_r1_... -> r1
+            first_param = parts[1]
             if first_param.startswith("r"):
                 return f"r={r_val}" if r_val else dir_name
             elif first_param.startswith("q"):
                 return f"q={q_val}" if q_val else dir_name
     
-    # Fallback
+    # Standardfall
     if r_val:
         return f"r={r_val}"
     if q_val:
@@ -111,8 +93,8 @@ def plot_combined_curves(
     show_std: bool = True,
 ):
     """Erstellt einen kombinierten Plot mit mehreren Kurven."""
-    
-    # Farbpalette für gute Unterscheidbarkeit
+
+    # Farben für die Kurven
     colors = ["#E64A19", "#1976D2", "#388E3C", "#7B1FA2", "#FBC02D", "#00796B"]
     
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -121,7 +103,7 @@ def plot_combined_curves(
         mean_curve = compute_mean_curve(curves)
         color = colors[idx % len(colors)]
         
-        # Hauptkurve
+        # Mittelwertkurve
         ax.plot(
             mean_curve["removed_frac"],
             mean_curve["gcc_mean"],
@@ -132,7 +114,7 @@ def plot_combined_curves(
             markersize=4,
         )
         
-        # Standardabweichung als Bereich
+        # Streuung als Fläche
         if show_std and "gcc_std" in mean_curve.columns:
             ax.fill_between(
                 mean_curve["removed_frac"],
@@ -184,7 +166,7 @@ def main():
     
     args = parser.parse_args()
     
-    # Sammle alle Daten
+    # Daten sammeln
     data: List[Tuple[str, pd.DataFrame]] = []
     
     for dir_path in args.directories:
@@ -205,10 +187,10 @@ def main():
         print("Keine Daten geladen. Abbruch.", file=sys.stderr)
         sys.exit(1)
     
-    # Sortiere nach Label für konsistente Reihenfolge
+    # Nach Label sortieren
     data.sort(key=lambda x: x[0])
     
-    # Erstelle Plot
+    # Plot erstellen
     output_path = Path(args.output)
     plot_combined_curves(data, args.title, output_path, show_std=not args.no_std)
 

@@ -12,7 +12,7 @@ def load_yaml_config(
 	experiment: str | Path | None = None,
 	experiment_name: str | None = None,
 ) -> Dict[str, Any]:
-	"""Lädt defaults.yaml und wendet optional Experiment-Overrides an."""
+	"""Lädt defaults.yaml und wendet Experiment-Overrides an."""
 	defaults_data = _read_yaml(defaults)
 	result = copy.deepcopy(defaults_data)
 
@@ -52,7 +52,7 @@ def _find_experiment(experiments: Iterable[Mapping[str, Any]], name: str) -> Dic
 
 
 def _apply_overrides(config: Dict[str, Any], overrides: Dict[str, Any]) -> None:
-	"""Wendet Overrides per Punkt-Notation oder verschachtelten Dicts an."""
+	"""Wendet Overrides auf die Konfiguration an."""
 	for key, value in overrides.items():
 		if isinstance(value, dict):
 			_set_nested_dict(config, key.split("."), value)
@@ -71,7 +71,7 @@ def _set_nested_value(config: Dict[str, Any], keys: List[str], value: Any) -> No
 
 
 def _set_nested_dict(config: Dict[str, Any], keys: List[str], value: Dict[str, Any]) -> None:
-	"""Führt einen Deep-Merge an der Zielstelle aus."""
+	"""Führt einen Merge am Zielknoten aus."""
 	target = config
 	for key in keys:
 		if key not in target or not isinstance(target[key], dict):
@@ -81,7 +81,7 @@ def _set_nested_dict(config: Dict[str, Any], keys: List[str], value: Dict[str, A
 
 
 def _deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> None:
-	"""Deep-Merge in-place für verschachtelte Dicts."""
+	"""Führt rekursiv einen Merge aus."""
 	for key, value in override.items():
 		if isinstance(value, dict) and isinstance(base.get(key), dict):
 			_deep_merge(base[key], value)

@@ -242,7 +242,7 @@ def main() -> None:
 			st.pyplot(fig)
 			st.dataframe(auc_df, use_container_width=True)
 			label = _build_run_label(config_source, experiment_name)
-			_export_outputs(curves_df, auc_df, results["meta"], label)  # Export nach outputs/
+			_export_outputs(curves_df, auc_df, results["meta"], label)  # Dateien nach outputs schreiben
 
 	with tab_data:
 		if results is None:
@@ -372,7 +372,7 @@ def _sync_state_from_config(base_config: Dict[str, Any]) -> None:
 
 
 def _get_base_value(config: Dict[str, Any], path: List[str], default: Any) -> Any:
-	"""Liest einen verschachtelten Wert mit Fallback."""
+	"""Liest einen verschachtelten Wert."""
 	current: Any = config
 	for key in path:
 		if not isinstance(current, dict) or key not in current:
@@ -392,7 +392,7 @@ def _get_topology_defaults(config: Dict[str, Any], net_key: str) -> Dict[str, Di
 
 
 def _default_base_config() -> Dict[str, Any]:
-	"""Fallback-Konfiguration bei fehlendem YAML."""
+	"""Standard-Konfiguration bei fehlendem YAML."""
 	return {
 		"allgemein": {"seed": 42, "runs": 30, "schrittweite": 0.05, "N": 100},
 		"gp": {

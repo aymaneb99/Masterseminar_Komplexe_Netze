@@ -1,62 +1,129 @@
+# Experimente E1 bis E8
+# Pro Vergleich wird nur ein Faktor geändert.
+# Gemeinsame Basis: N_GP=500, N_GC=50, 30 Runs, Schrittweite 5 %.
+
 experiments:
-  # Vergleich: konventionelles Netz vs. Smart Grid
-  - name: konventionell_gp_only
-    beschreibung: Interdependenz deaktiviert (nur GP aktiv)
+
+  # Block 1: Konventionelle Baselines ohne GC
+
+  - name: E1_er_random
+    beschreibung: >
+      Konventionelles ER-Netz unter zufälligen Ausfällen.
     override:
+      modi: [konventionell]
       interdependenz.aktiv: false
-
-  - name: smartgrid_mit_interdependenz
-    beschreibung: Interdependenz aktiviert (GP + GC gekoppelt)
-    override:
-      interdependenz.aktiv: true
-
-  # Angriffsziel variieren
-  - name: angriff_gp_random
-    beschreibung: Random-Ausfälle, Angriff auf GP
-    override:
+      gp.topologie: ER
       stoerszenarien.szenario_typ: random
       stoerszenarien.angreifbares_netz: GP
 
-  - name: angriff_gc_random
-    beschreibung: Random-Ausfälle, Angriff auf GC
+  - name: E2_ba_random
+    beschreibung: >
+      Konventionelles BA-Netz unter zufälligen Ausfällen.
+      Vergleich zu E1: Topologieeffekt.
     override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: BA
       stoerszenarien.szenario_typ: random
-      stoerszenarien.angreifbares_netz: GC
-      modi: [smart_grid]
+      stoerszenarien.angreifbares_netz: GP
 
-  # Random vs. targeted
-  - name: targeted_degree_gp
-    beschreibung: Targeted-Ausfälle nach Degree auf GP
+  - name: E3_er_targeted
+    beschreibung: >
+      Konventionelles ER-Netz unter gezieltem Angriff.
+      Vergleich zu E1: random gegen targeted.
     override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: ER
       stoerszenarien.szenario_typ: targeted
       stoerszenarien.targeted_metrik: degree
       stoerszenarien.angreifbares_netz: GP
 
-  - name: targeted_betweenness_gp
-    beschreibung: Targeted-Ausfälle nach Betweenness auf GP
+  - name: E4_ba_targeted
+    beschreibung: >
+      Konventionelles BA-Netz unter gezieltem Angriff.
+      Vergleich zu E2: Wirkung auf BA-Hubs.
+      Vergleich zu E3: ER gegen BA unter targeted.
     override:
+      modi: [konventionell]
+      interdependenz.aktiv: false
+      gp.topologie: BA
       stoerszenarien.szenario_typ: targeted
-      stoerszenarien.targeted_metrik: betweenness
+      stoerszenarien.targeted_metrik: degree
       stoerszenarien.angreifbares_netz: GP
 
-  # Kopplungsanteil q variieren
-  - name: q_niedrig
-    beschreibung: Schwache Kopplung zwischen GP und GC
-    override:
-      interdependenz.q: 0.3
+  # Block 2: Smart Grid mit BA/BA und korrelierter Kopplung
 
-  - name: q_hoch
-    beschreibung: Starke Kopplung zwischen GP und GC
+  - name: E5_smartgrid_interdependenz
+    beschreibung: >
+      Smart Grid (BA/BA), korrelierte Deps, gezielter GC-Angriff,
+      ohne Kaskade. Vergleich zu E4: indirekter Angriff.
     override:
-      interdependenz.q: 0.9
-
-  # Redundanz r variieren
-  - name: redundanz_1
-    beschreibung: Minimale Redundanz der Abhängigkeiten
-    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      gc.N: 50
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
       interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      interdependenz.kaskade: false
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
 
-  - name: redundanz_3
-    beschreibung: Erhöhte Redundanz der Abhängigkeiten
+  - name: E6_smartgrid_kaskade
+    beschreibung: >
+      Smart Grid (BA/BA), korrelierte Deps, gezielter GC-Angriff,
+      mit Kaskade. Vergleich zu E5: Kaskadeneffekt.
     override:
-      interdependenz.r: 3
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      gc.N: 50
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 1
+      interdependenz.correlation_mode: degree
+      interdependenz.kaskade: true
+      interdependenz.max_cascade_steps: 100
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+
+  - name: E7_smartgrid_redundanz_kaskade
+    beschreibung: >
+      Smart Grid (BA/BA), korrelierte Deps, r=2, mit Kaskade.
+      Vergleich zu E6: Redundanz mit Kaskade.
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      gc.N: 50
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 2
+      interdependenz.correlation_mode: degree
+      interdependenz.kaskade: true
+      interdependenz.max_cascade_steps: 100
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC
+
+  - name: E8_smartgrid_redundanz_ohne_kaskade
+    beschreibung: >
+      Smart Grid (BA/BA), korrelierte Deps, r=2, ohne Kaskade.
+      Vergleich zu E7: Schutzwirkung ohne Kaskade.
+    override:
+      modi: [smart_grid]
+      gp.topologie: BA
+      gc.topologie: BA
+      gc.N: 50
+      interdependenz.aktiv: true
+      interdependenz.q: 1.0
+      interdependenz.r: 2
+      interdependenz.correlation_mode: degree
+      interdependenz.kaskade: false
+      stoerszenarien.szenario_typ: targeted
+      stoerszenarien.targeted_metrik: degree
+      stoerszenarien.angreifbares_netz: GC

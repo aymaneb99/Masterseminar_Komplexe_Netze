@@ -7,10 +7,9 @@ import networkx as nx
 
 def create_gc_network(config: Dict[str, Any], seed: int) -> nx.Graph:
 	"""Erzeugt das Kommunikationsnetz (GC) als zusammenhängenden Graph."""
-	allgemein = config["allgemein"]
 	gc_cfg = config["gc"]
 
-	n_nodes = int(allgemein["N"])
+	n_nodes = int(gc_cfg.get("N", config["allgemein"]["N"]))
 	topologie = gc_cfg["topologie"]
 	parameter = gc_cfg["parameter"][topologie]
 
